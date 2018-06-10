@@ -161,7 +161,7 @@ public class PlayScreen implements Screen {
     }
     public void removeObject( RunningObject co){
         lock.lock();
-        System.out.println("try remove object object");
+        System.out.println("try remove objects object");
         try{
             listObjects.removeValue(co,false);
         }
