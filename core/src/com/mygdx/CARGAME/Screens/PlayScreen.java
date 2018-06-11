@@ -37,7 +37,9 @@ public class PlayScreen implements Screen {
     private Texture background;
     private Array<RunningObject> listObjects;
     private Array<Body> deadBodies;
+    private float deltaTimer;
     private float generateTimer;
+    private float generateTimer2;
     private ReentrantLock lock;
     private boolean gameOver=false;
 
@@ -52,7 +54,9 @@ public class PlayScreen implements Screen {
         listObjects=new Array<RunningObject>();
         deadBodies=new Array<Body>();
         lock=new ReentrantLock();
+        deltaTimer = 0.6f;
         generateTimer=0;
+        generateTimer2 = 0;
 
 
         this.game=carGame;
@@ -136,17 +140,17 @@ public class PlayScreen implements Screen {
             y=mousePos.y;
             if (x<CarGame.WIDTH/2) {
                 //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-                if (x > blueCar.b2body.getPosition().x) {
+                if (blueCar.b2body.getLinearVelocity().x<0) {
                     blueCar.b2body.setLinearVelocity(100, 0);
-                } else if (x < blueCar.b2body.getPosition().x) {
+                } else if (blueCar.b2body.getLinearVelocity().x>0) {
                     blueCar.b2body.setLinearVelocity(-100, 0);
                 }
             }
             else{
 
-                if (x > redCar.b2body.getPosition().x) {
+                if (redCar.b2body.getLinearVelocity().x<0) {
                     redCar.b2body.setLinearVelocity(100, 0);
-                } else if (x < redCar.b2body.getPosition().x) {
+                } else if (redCar.b2body.getLinearVelocity().x>0) {
                     redCar.b2body.setLinearVelocity(-100, 0);
                 }
             }
@@ -172,8 +176,11 @@ public class PlayScreen implements Screen {
 
     }
     void generateObjects(float delta){
-        if (generateTimer>1.5f){
+        if (generateTimer>2f){
             generateTimer=0;
+        }
+        if (generateTimer2>2f + deltaTimer) {
+            generateTimer2 = deltaTimer;
         }
 
         if (generateTimer==0f) {
@@ -200,8 +207,12 @@ public class PlayScreen implements Screen {
                     lock.unlock();
                 }
             }
+        }
 
-            circle=random.nextBoolean();
+        if (generateTimer2>=deltaTimer - 0.01 && generateTimer2 < deltaTimer + 0.01) {
+
+            Random random = new Random();
+            boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2)+2;
                 CircleObject co = new CircleObject(this, world, left);
@@ -226,8 +237,9 @@ public class PlayScreen implements Screen {
 
 
         }
-        generateTimer+=delta;
-
+//        generateTimer+=delta;
+        generateTimer += 0.015;
+        generateTimer2 += 0.015;
     }
 
     void update(float delta){

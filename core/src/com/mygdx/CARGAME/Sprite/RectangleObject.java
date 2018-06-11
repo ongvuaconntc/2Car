@@ -20,7 +20,7 @@ public class RectangleObject extends RunningObject {
     public RectangleObject (PlayScreen screen, World world, int left){
         super(screen,world,left,"rectangle");
         shape=new PolygonShape();
-        shape.setAsBox(16,16);
+        shape.setAsBox(CarGame.OBJECT_SIZE/2,CarGame.OBJECT_SIZE/2);
         FixtureDef fdef =new FixtureDef();
         fdef.shape=shape;
         fdef.filter.categoryBits= CarGame.RECTANGLE_BIT;
@@ -28,7 +28,7 @@ public class RectangleObject extends RunningObject {
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
 
-        this.texture=new TextureRegion(getTexture(),35,0,32,32);
+        this.texture=new TextureRegion(getTexture(),CarGame.OBJECT_SIZE+3,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
         setRegion(this.texture);
     }
 

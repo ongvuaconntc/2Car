@@ -26,13 +26,13 @@ public abstract class RunningObject extends Sprite {
         this.screen=screen;
         BodyDef bdef=new BodyDef();
         switch (left){
-            case 0: bdef.position.set(26,410);
+            case 0: bdef.position.set(CarGame.WIDTH/8,410);
                 break;
-            case 1: bdef.position.set(78,410);
+            case 1: bdef.position.set(3*CarGame.WIDTH/8,410);
                 break;
-            case 2: bdef.position.set(130,410);
+            case 2: bdef.position.set(5*CarGame.WIDTH/8,410);
                 break;
-            case 3: bdef.position.set(182,410);
+            case 3: bdef.position.set(7*CarGame.WIDTH/8,410);
                 break;
         }
         bdef.type=BodyDef.BodyType.DynamicBody;

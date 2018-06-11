@@ -24,7 +24,7 @@ public class CircleObject extends RunningObject {
     public CircleObject (PlayScreen screen,World world, int left){
         super(screen,world,left,"circle");
         shape=new CircleShape();
-        shape.setRadius(16);
+        shape.setRadius(CarGame.OBJECT_SIZE/2);
         FixtureDef fdef =new FixtureDef();
         fdef.shape=shape;
         fdef.filter.categoryBits= CarGame.CIRCLE_BIT;
@@ -32,7 +32,7 @@ public class CircleObject extends RunningObject {
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
 
-        this.texture=new TextureRegion(getTexture(),0,0,32,32);
+        this.texture=new TextureRegion(getTexture(),0,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
         setRegion(this.texture);
     }
 
