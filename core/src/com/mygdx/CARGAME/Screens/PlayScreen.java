@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -315,11 +316,17 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
-        box2DDebugRenderer.render(world,game_cam.combined);
+//        box2DDebugRenderer.render(world,game_cam.combined);
 
         if (gameOver){
             ScreenshotFactory sf = new ScreenshotFactory();
-            capturedLastFrame = new Texture(sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false));
+            Pixmap pixmap = sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            Pixmap pixmap1 = new Pixmap((int) game_port.getWorldWidth(), (int) game_port.getWorldHeight(), pixmap.getFormat());
+            pixmap1.drawPixmap(pixmap,
+                    0, 0, pixmap.getWidth(), pixmap.getHeight(),
+                    0, 0, pixmap1.getWidth(), pixmap1.getHeight()
+            );
+            capturedLastFrame = new Texture(pixmap1);
             game.setScreen(new GameOverScreen(game, capturedLastFrame));
             dispose();
         }
