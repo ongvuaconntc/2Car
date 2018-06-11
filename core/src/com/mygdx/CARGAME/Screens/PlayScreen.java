@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -37,7 +38,9 @@ public class PlayScreen implements Screen {
     private Texture background;
     private Array<RunningObject> listObjects;
     private Array<Body> deadBodies;
+    private float deltaTimer;
     private float generateTimer;
+    private float generateTimer2;
     private ReentrantLock lock;
     private boolean gameOver=false;
 
@@ -52,7 +55,10 @@ public class PlayScreen implements Screen {
         listObjects=new Array<RunningObject>();
         deadBodies=new Array<Body>();
         lock=new ReentrantLock();
+        Random rand = new Random();
+        deltaTimer = 0.6f;
         generateTimer=0;
+        generateTimer2=0;
 
 
         this.game=carGame;
@@ -161,7 +167,7 @@ public class PlayScreen implements Screen {
     }
     public void removeObject( RunningObject co){
         lock.lock();
-        System.out.println("try remove object object");
+//        System.out.println("try remove object object");
         try{
             listObjects.removeValue(co,false);
         }
@@ -172,8 +178,11 @@ public class PlayScreen implements Screen {
 
     }
     void generateObjects(float delta){
-        if (generateTimer>1.5f){
+        if (generateTimer>2f){
             generateTimer=0;
+        }
+        if (generateTimer2 > 2 + deltaTimer) {
+            generateTimer2 = deltaTimer;
         }
 
         if (generateTimer==0f) {
@@ -200,8 +209,12 @@ public class PlayScreen implements Screen {
                     lock.unlock();
                 }
             }
+        }
 
-            circle=random.nextBoolean();
+        if (generateTimer2 >= (deltaTimer-0.01)  && generateTimer2 < (deltaTimer + 0.01)) {
+
+            Random random = new Random();
+            boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2)+2;
                 CircleObject co = new CircleObject(this, world, left);
@@ -226,8 +239,10 @@ public class PlayScreen implements Screen {
 
 
         }
-        generateTimer+=delta;
-
+//        generateTimer+=delta;
+//        generateTimer2+=delta;
+        generateTimer+=0.015;
+        generateTimer2+=0.015;
     }
 
     void update(float delta){
@@ -260,7 +275,7 @@ public class PlayScreen implements Screen {
         finally {
             lock.unlock();
         }
-       System.out.println("list Circle size"+listObjects.size);
+//       System.out.println("list Circle size"+listObjects.size);
     }
 
     @Override
@@ -278,6 +293,7 @@ public class PlayScreen implements Screen {
         blueCar.draw(game.batch);
         redCar.draw(game.batch);
         lock.lock();
+//        long startTime = System.nanoTime();
         try {
             for (RunningObject co : listObjects) {
                 co.draw(game.batch);
@@ -291,11 +307,17 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
         box2DDebugRenderer.render(world,game_cam.combined);
+        Matrix4 tmp = game_cam.combined;
+//        long endTime = System.nanoTime();
 
         if (gameOver){
             game.setScreen(new GameOverScreen(game));
             dispose();
         }
+
+
+//        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+//        System.out.println("time executed: " + duration/1000000);
     }
 
     @Override

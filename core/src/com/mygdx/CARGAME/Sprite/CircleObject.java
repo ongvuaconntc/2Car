@@ -37,7 +37,7 @@ public class CircleObject extends RunningObject {
     }
 
     public void onHeadHit(){
-        System.out.println("HIT HIT HIT");
+//        System.out.println("HIT HIT HIT");
         screen.getHud().addScore();
         screen.addBody(body);
         screen.removeObject(this);
