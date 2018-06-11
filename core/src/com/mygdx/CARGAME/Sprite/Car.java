@@ -76,7 +76,7 @@ public class Car extends Sprite {
       //  b2body.setLinearVelocity(new Vector2(0,0));
         FixtureDef fdef=new FixtureDef();
         CircleShape shape=new CircleShape();
-        shape.setRadius(10);
+        shape.setRadius(20);
         fdef.filter.categoryBits= CarGame.CAR_BIT;
         fdef.filter.maskBits=CarGame.CIRCLE_BIT|CarGame.RECTANGLE_BIT|CarGame.GROUND_BIT;
         fdef.shape=shape;
@@ -86,7 +86,7 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         shape=new CircleShape();
-        shape.setRadius(12);
+        shape.setRadius(22);
         fdef.shape=shape;
         fdef.isSensor=true;
         b2body.createFixture(fdef).setUserData("car");
@@ -94,17 +94,17 @@ public class Car extends Sprite {
         //barriers
         bdef=new BodyDef();
         if (blue)
-        bdef.position.set(CarGame.WIDTH/8-10,26);
-        else bdef.position.set(7*CarGame.WIDTH/8+10,26);
+        bdef.position.set(CarGame.WIDTH/8-30,26);
+        else bdef.position.set(7*CarGame.WIDTH/8+30,26);
         bdef.type=BodyDef.BodyType.StaticBody;
         Body body=world.createBody(bdef);
 
         fdef=new FixtureDef();
         Rectangle rect=new Rectangle();
         if (blue)
-        rect.set(CarGame.WIDTH/8-10,20,10,10);
+        rect.set(CarGame.WIDTH/8-30,20,20,20);
         else
-            rect.set(7*CarGame.WIDTH/8+10,20,10,10);
+            rect.set(7*CarGame.WIDTH/8+30,20,20,20);
         PolygonShape polygonShape=new PolygonShape();
         polygonShape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
         fdef.filter.categoryBits= CarGame.GROUND_BIT;
@@ -115,8 +115,8 @@ public class Car extends Sprite {
 
         bdef=new BodyDef();
         if (blue)
-        bdef.position.set(3*CarGame.WIDTH/8+10,26);
-        else bdef.position.set(5*CarGame.WIDTH/8-10,26);
+        bdef.position.set(3*CarGame.WIDTH/8+30,26);
+        else bdef.position.set(5*CarGame.WIDTH/8-30,26);
         bdef.type=BodyDef.BodyType.StaticBody;
         body=world.createBody(bdef);
 
@@ -125,9 +125,9 @@ public class Car extends Sprite {
         rect=new Rectangle();
 
         if (blue)
-        rect.set(3*CarGame.WIDTH/8+10,20,10,10);
+        rect.set(3*CarGame.WIDTH/8+30,20,20,20);
         else
-            rect.set(5*CarGame.WIDTH/8-10,20,10,10);
+            rect.set(5*CarGame.WIDTH/8-30,20,20,20);
 
         polygonShape=new PolygonShape();
         polygonShape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
