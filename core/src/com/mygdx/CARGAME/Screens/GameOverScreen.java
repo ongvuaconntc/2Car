@@ -33,6 +33,7 @@ public class GameOverScreen implements Screen {
         game_cam=new OrthographicCamera();
         viewport=new StretchViewport(game.WIDTH,game.HEIGHT,game_cam);
         game_cam.position.set(viewport.getWorldWidth()/2,viewport.getWorldHeight()/2,0);
+
         hud=new Hud(game.batch);
 
 
@@ -70,7 +71,7 @@ public class GameOverScreen implements Screen {
 
         game.batch.setProjectionMatrix(game_cam.combined);
         game.batch.begin();
-        game.batch.draw(new Texture("background.jpg"),0,0);
+        game.batch.draw(capturedLastFrame,0,0);
         game.batch.end();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
@@ -78,7 +79,7 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width,height);
     }
 
     @Override
