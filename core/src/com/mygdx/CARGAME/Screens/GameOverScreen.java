@@ -6,26 +6,39 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.mygdx.CARGAME.CarGame;
+import com.mygdx.CARGAME.scenes.Hud;
+import com.mygdx.entity.ScreenshotFactory;
 
 public class GameOverScreen implements Screen {
     private Viewport viewport;
-    private Stage stage;
+    private Hud hud;
+    private Texture capturedLastFrame;
 
-    private Game game;
+    private CarGame game;
+    private OrthographicCamera game_cam;
 
-    public GameOverScreen(Game game){
+    public GameOverScreen(CarGame game, Texture lastFrame){
         this.game = game;
-        viewport = new FitViewport(CarGame.WIDTH, CarGame.HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, ((CarGame) game).batch);
+        this.capturedLastFrame = lastFrame;
+        game_cam=new OrthographicCamera();
+        viewport=new StretchViewport(game.WIDTH,game.HEIGHT,game_cam);
+        game_cam.position.set(viewport.getWorldWidth()/2,viewport.getWorldHeight()/2,0);
+        hud=new Hud(game.batch);
 
-        Label.LabelStyle font = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
+
+        BitmapFont f = new BitmapFont();
+        f.getData().setScale(2f);
+        Label.LabelStyle font = new Label.LabelStyle(f, Color.WHITE);
 
         Table table = new Table();
         table.center();
@@ -38,7 +51,7 @@ public class GameOverScreen implements Screen {
         table.row();
         table.add(playAgainLabel).expandX().padTop(10f);
 
-        stage.addActor(table);
+        hud.stage.addActor(table);
     }
 
     @Override
@@ -52,9 +65,15 @@ public class GameOverScreen implements Screen {
             game.setScreen(new PlayScreen((CarGame) game));
             dispose();
         }
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.draw();
+
+        game.batch.setProjectionMatrix(game_cam.combined);
+        game.batch.begin();
+        game.batch.draw(new Texture("background.jpg"),0,0);
+        game.batch.end();
+        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        hud.stage.draw();
     }
 
     @Override
@@ -79,6 +98,6 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void dispose() {
-        stage.dispose();
+        hud.dispose();
     }
 }

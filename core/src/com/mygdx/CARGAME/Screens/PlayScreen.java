@@ -22,6 +22,7 @@ import com.mygdx.CARGAME.Sprite.RectangleObject;
 import com.mygdx.CARGAME.Sprite.RunningObject;
 import com.mygdx.CARGAME.Tools.WorldContactListener;
 import com.mygdx.CARGAME.scenes.Hud;
+import com.mygdx.entity.ScreenshotFactory;
 
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,6 +44,7 @@ public class PlayScreen implements Screen {
     private float generateTimer2;
     private ReentrantLock lock;
     private boolean gameOver=false;
+    private Texture capturedLastFrame;
 
     private Box2DDebugRenderer  box2DDebugRenderer;
 
@@ -312,7 +314,9 @@ public class PlayScreen implements Screen {
         box2DDebugRenderer.render(world,game_cam.combined);
 
         if (gameOver){
-            game.setScreen(new GameOverScreen(game));
+            ScreenshotFactory sf = new ScreenshotFactory();
+            capturedLastFrame = new Texture(sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false));
+            game.setScreen(new GameOverScreen(game, capturedLastFrame));
             dispose();
         }
     }
