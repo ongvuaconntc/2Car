@@ -253,7 +253,7 @@ public class PlayScreen implements Screen {
     void update(float delta){
         handleInput();
         generateObjects(delta);
-        world.step(1/60f,1,1);
+        world.step(1/60f,3,3);
         while (deadBodies.size>0){
             Body body=deadBodies.get(0);
             deadBodies.removeIndex(0);
