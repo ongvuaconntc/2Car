@@ -30,15 +30,18 @@ public class Car extends Sprite {
     private float stateTimer;
 
     public Car(World world, PlayScreen playScreen,boolean blue,String name){
+
         super(playScreen.getAtlas().findRegion(name));
         this.world=world;
         currentState=State.STRAIGHT;
         previousState=State.STRAIGHT;
+        int indexX=0;
+        if (!blue) indexX=512;
 
         stateTimer=0;
         Array<TextureRegion> frames=new Array();
         for (int i=1;i<4;i++){
-            frames.add(new TextureRegion(getTexture(),i*CarGame.CAR_SIZE,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE));
+            frames.add(new TextureRegion(getTexture(),indexX+i*CarGame.CAR_SIZE,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE));
 
         }
         carTurnRight=new Animation<TextureRegion>(0.1f,frames);
@@ -46,14 +49,14 @@ public class Car extends Sprite {
         frames.clear();
 
         for (int i=4;i<7;i++){
-            frames.add(new TextureRegion(getTexture(),i*CarGame.CAR_SIZE,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE));
+            frames.add(new TextureRegion(getTexture(),indexX+i*CarGame.CAR_SIZE,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE));
         }
 
         carTurnLeft=new Animation<TextureRegion>(0.1f,frames);
 
 
         defineCar(blue);
-        carGoStraight=new TextureRegion(getTexture(),0,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE);
+        carGoStraight=new TextureRegion(getTexture(),indexX,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE);
         setRegion(carGoStraight);
 
 
@@ -73,7 +76,7 @@ public class Car extends Sprite {
       //  b2body.setLinearVelocity(new Vector2(0,0));
         FixtureDef fdef=new FixtureDef();
         CircleShape shape=new CircleShape();
-        shape.setRadius(5);
+        shape.setRadius(10);
         fdef.filter.categoryBits= CarGame.CAR_BIT;
         fdef.filter.maskBits=CarGame.CIRCLE_BIT|CarGame.RECTANGLE_BIT|CarGame.GROUND_BIT;
         fdef.shape=shape;
@@ -83,7 +86,7 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         shape=new CircleShape();
-        shape.setRadius(7);
+        shape.setRadius(12);
         fdef.shape=shape;
         fdef.isSensor=true;
         b2body.createFixture(fdef).setUserData("car");

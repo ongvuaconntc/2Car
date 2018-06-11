@@ -51,7 +51,6 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(CarGame carGame){
         atlas=new TextureAtlas("Car.pack");
-        atlas_RED=new TextureAtlas("Car_RED.pack");
 
         atlasObjects=new TextureAtlas("Object.pack");
         listObjects=new Array<RunningObject>();
@@ -76,8 +75,8 @@ public class PlayScreen implements Screen {
         world=new World(new Vector2(0,0),true);
         box2DDebugRenderer=new Box2DDebugRenderer();
 
-        blueCar=new Car(world,this,true,"car_blue");
-        redCar=new Car(world,this,false,"car_blue");
+        blueCar=new Car(world,this,true,"Car_Blue");
+        redCar=new Car(world,this,false,"Car_Red");
 
 
 
@@ -122,17 +121,17 @@ public class PlayScreen implements Screen {
             if (x<CarGame.WIDTH/2) {
                 //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
                 if (x > blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(300, 0);
+                    blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                 } else if (x < blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(-300, 0);
+                    blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                 }
             }
             else{
 
                 if (x > redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(300, 0);
+                    redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                 } else if (x < redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(-300, 0);
+                    redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                 }
             }
 
@@ -148,17 +147,17 @@ public class PlayScreen implements Screen {
             if (x<CarGame.WIDTH/2) {
                 //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
                 if (blueCar.b2body.getLinearVelocity().x<0) {
-                    blueCar.b2body.setLinearVelocity(300, 0);
+                    blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                 } else if (blueCar.b2body.getLinearVelocity().x>0) {
-                    blueCar.b2body.setLinearVelocity(-300, 0);
+                    blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                 }
             }
             else{
 
                 if (redCar.b2body.getLinearVelocity().x<0) {
-                    redCar.b2body.setLinearVelocity(300, 0);
+                    redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                 } else if (redCar.b2body.getLinearVelocity().x>0) {
-                    redCar.b2body.setLinearVelocity(-300, 0);
+                    redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                 }
             }
 
@@ -253,7 +252,7 @@ public class PlayScreen implements Screen {
     void update(float delta){
         handleInput();
         generateObjects(delta);
-        world.step(1/60f,3,3);
+        world.step(1/60f,6,3);
         while (deadBodies.size>0){
             Body body=deadBodies.get(0);
             deadBodies.removeIndex(0);

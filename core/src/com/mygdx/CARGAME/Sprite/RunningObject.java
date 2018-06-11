@@ -39,7 +39,7 @@ public abstract class RunningObject extends Sprite {
 
         body=world.createBody(bdef);
         body.applyTorque(0,true);
-        body.setLinearVelocity(0,-100);
+        body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
 
 
 

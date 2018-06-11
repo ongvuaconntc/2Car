@@ -11,8 +11,11 @@ public class CarGame extends Game {
     public static final int OBJECT_SIZE=32;
 	public static final int CAR_SIZE=64;
 
+	public static final int CAR_VELOCITY=600;
+	public static final int OBJECT_VELOCITY=300;
 
-    public static final short CAR_BIT=1;
+
+	public static final short CAR_BIT=1;
     public static final short CIRCLE_BIT=2;
     public static final short RECTANGLE_BIT=4;
     public static final short GROUND_BIT=8;
