@@ -86,7 +86,7 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         shape=new CircleShape();
-        shape.setRadius(22);
+        shape.setRadius(25);
         fdef.shape=shape;
         fdef.isSensor=true;
         b2body.createFixture(fdef).setUserData("car");

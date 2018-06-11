@@ -38,7 +38,7 @@ public class RectangleObject extends RunningObject {
 
 
     public void onHeadHit(){
-        System.out.println("HIT HIT HIT");
+     //   System.out.println("HIT HIT HIT");
         screen.addBody(body);
         screen.setGameOver(true);
 }

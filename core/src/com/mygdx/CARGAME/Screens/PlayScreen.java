@@ -255,12 +255,7 @@ public class PlayScreen implements Screen {
         handleInput();
         generateObjects(delta);
         world.step(1/60f,6,3);
-        while (deadBodies.size>0){
-            Body body=deadBodies.get(0);
-            deadBodies.removeIndex(0);
-            world.destroyBody(body);
-            body.setUserData(null);
-        }
+
 
 
         blueCar.update(delta);
@@ -272,6 +267,7 @@ public class PlayScreen implements Screen {
                 co.update(delta);
                 if (co.body.getPosition().y < 0) {
                     listObjects.removeValue(co, false);
+                    deadBodies.add(co.body);
                     if (CircleObject.class.isAssignableFrom(co.getClass())){
                         setGameOver(true);
                     }
@@ -281,7 +277,15 @@ public class PlayScreen implements Screen {
         finally {
             lock.unlock();
         }
-       System.out.println("list Circle size"+listObjects.size);
+        System.out.println("dead bodies size"+deadBodies.size);
+
+        while (deadBodies.size>0){
+            Body body=deadBodies.get(0);
+            deadBodies.removeIndex(0);
+            world.destroyBody(body);
+            body.setUserData(null);
+        }
+    //   System.out.println("list Objects size"+listObjects.size);
     }
 
     @Override
