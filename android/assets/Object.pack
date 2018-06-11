@@ -3,16 +3,30 @@ Object.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+circle_red
+  rotate: false
+  xy: 0, 29
+  size: 35, 35
+  orig: 35, 35
+  offset: 0, 0
+  index: -1
 circle
   rotate: false
-  xy: 1, 1
+  xy: 35, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 rectangle
   rotate: false
-  xy: 35, 1
+  xy: 35, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+rectangle_red
+  rotate: false
+  xy: 67, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

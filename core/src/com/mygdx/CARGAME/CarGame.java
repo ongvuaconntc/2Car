@@ -8,8 +8,8 @@ public class CarGame extends Game {
 	public SpriteBatch batch;
 	public static final int WIDTH=360;
     public static final int HEIGHT=640;
-    public static final int OBJECT_SIZE=64;
-	public static final int CAR_SIZE=16;
+    public static final int OBJECT_SIZE=32;
+	public static final int CAR_SIZE=64;
 
 
     public static final short CAR_BIT=1;

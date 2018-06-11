@@ -33,6 +33,7 @@ public class PlayScreen implements Screen {
     private Hud hud;
     private World world;
     private TextureAtlas atlas;
+    private TextureAtlas atlas_RED;
     private TextureAtlas atlasObjects;
     private Texture background;
     private Array<RunningObject> listObjects;
@@ -49,7 +50,9 @@ public class PlayScreen implements Screen {
     private Car redCar;
 
     public PlayScreen(CarGame carGame){
-        atlas=new TextureAtlas("Car.atlas");
+        atlas=new TextureAtlas("Car.pack");
+        atlas_RED=new TextureAtlas("Car_RED.pack");
+
         atlasObjects=new TextureAtlas("Object.pack");
         listObjects=new Array<RunningObject>();
         deadBodies=new Array<Body>();
@@ -89,6 +92,10 @@ public class PlayScreen implements Screen {
         return atlasObjects;
     }
 
+    public TextureAtlas getAtlas_RED() {
+        return atlas_RED;
+    }
+
     @Override
     public void show() {
 
@@ -115,17 +122,17 @@ public class PlayScreen implements Screen {
             if (x<CarGame.WIDTH/2) {
                 //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
                 if (x > blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(100, 0);
+                    blueCar.b2body.setLinearVelocity(300, 0);
                 } else if (x < blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(-100, 0);
+                    blueCar.b2body.setLinearVelocity(-300, 0);
                 }
             }
             else{
 
                 if (x > redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(100, 0);
+                    redCar.b2body.setLinearVelocity(300, 0);
                 } else if (x < redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(-100, 0);
+                    redCar.b2body.setLinearVelocity(-300, 0);
                 }
             }
 
@@ -141,17 +148,17 @@ public class PlayScreen implements Screen {
             if (x<CarGame.WIDTH/2) {
                 //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
                 if (blueCar.b2body.getLinearVelocity().x<0) {
-                    blueCar.b2body.setLinearVelocity(100, 0);
+                    blueCar.b2body.setLinearVelocity(300, 0);
                 } else if (blueCar.b2body.getLinearVelocity().x>0) {
-                    blueCar.b2body.setLinearVelocity(-100, 0);
+                    blueCar.b2body.setLinearVelocity(-300, 0);
                 }
             }
             else{
 
                 if (redCar.b2body.getLinearVelocity().x<0) {
-                    redCar.b2body.setLinearVelocity(100, 0);
+                    redCar.b2body.setLinearVelocity(300, 0);
                 } else if (redCar.b2body.getLinearVelocity().x>0) {
-                    redCar.b2body.setLinearVelocity(-100, 0);
+                    redCar.b2body.setLinearVelocity(-300, 0);
                 }
             }
 
@@ -189,7 +196,8 @@ public class PlayScreen implements Screen {
             boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2);
-                CircleObject co = new CircleObject(this, world, left);
+
+                CircleObject co = new CircleObject(this, world, left,"circle");
                 lock.lock();
                 try {
                     listObjects.add(co);
@@ -199,7 +207,7 @@ public class PlayScreen implements Screen {
             }
             else{
                 int left = random.nextInt(2);
-                RectangleObject co = new RectangleObject(this, world, left);
+                RectangleObject co = new RectangleObject(this, world, left,"rectangle");
                 lock.lock();
                 try {
                     listObjects.add(co);
@@ -215,7 +223,7 @@ public class PlayScreen implements Screen {
             boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2)+2;
-                CircleObject co = new CircleObject(this, world, left);
+                CircleObject co = new CircleObject(this, world, left,"circle_red");
                 lock.lock();
                 try {
                     listObjects.add(co);
@@ -225,7 +233,7 @@ public class PlayScreen implements Screen {
             }
             else{
                 int left = random.nextInt(2)+2;
-                RectangleObject co = new RectangleObject(this, world, left);
+                RectangleObject co = new RectangleObject(this, world, left,"rectangle_red");
                 lock.lock();
                 try {
                     listObjects.add(co);

@@ -17,8 +17,8 @@ public class RectangleObject extends RunningObject {
     protected PolygonShape shape;
 
 
-    public RectangleObject (PlayScreen screen, World world, int left){
-        super(screen,world,left,"rectangle");
+    public RectangleObject (PlayScreen screen, World world, int left,String name){
+        super(screen,world,left,name);
         shape=new PolygonShape();
         shape.setAsBox(CarGame.OBJECT_SIZE/2,CarGame.OBJECT_SIZE/2);
         FixtureDef fdef =new FixtureDef();
@@ -28,7 +28,11 @@ public class RectangleObject extends RunningObject {
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
 
-        this.texture=new TextureRegion(getTexture(),CarGame.OBJECT_SIZE+3,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        if (left<2)
+        this.texture=new TextureRegion(getTexture(),35,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        else
+            this.texture=new TextureRegion(getTexture(),67,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+
         setRegion(this.texture);
     }
 
