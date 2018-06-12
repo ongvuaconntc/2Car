@@ -31,7 +31,7 @@ public class GameOverScreen implements Screen {
         this.game = game;
         this.capturedLastFrame = lastFrame;
         game_cam=new OrthographicCamera();
-        viewport=new StretchViewport(game.WIDTH,game.HEIGHT,game_cam);
+        viewport=new StretchViewport((game.WIDTH/game.PPM),(game.HEIGHT/game.PPM),game_cam);
         game_cam.position.set(viewport.getWorldWidth()/2,viewport.getWorldHeight()/2,0);
 
         hud=new Hud(game.batch);

@@ -26,19 +26,21 @@ public abstract class RunningObject extends Sprite {
         this.screen=screen;
         BodyDef bdef=new BodyDef();
         switch (left){
-            case 0: bdef.position.set(CarGame.WIDTH/8,CarGame.HEIGHT+10);
+            case 0: bdef.position.set(CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM);
                 break;
-            case 1: bdef.position.set(3*CarGame.WIDTH/8,CarGame.HEIGHT+10);
+            case 1: bdef.position.set(3*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM);
                 break;
-            case 2: bdef.position.set(5*CarGame.WIDTH/8,CarGame.HEIGHT+10);
+            case 2: bdef.position.set(5*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM);
                 break;
-            case 3: bdef.position.set(7*CarGame.WIDTH/8,CarGame.HEIGHT+10);
+            case 3: bdef.position.set(7*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM);
                 break;
         }
         bdef.type=BodyDef.BodyType.DynamicBody;
 
         body=world.createBody(bdef);
         body.applyTorque(0,true);
+        body.setLinearDamping(0);
+
         body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
 
 

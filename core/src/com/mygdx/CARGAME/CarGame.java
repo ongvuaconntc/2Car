@@ -6,13 +6,14 @@ import com.mygdx.CARGAME.Screens.PlayScreen;
 
 public class CarGame extends Game {
 	public SpriteBatch batch;
+	public static final float PPM=70;
 	public static final int WIDTH=360;
     public static final int HEIGHT=640;
     public static final int OBJECT_SIZE=32;
 	public static final int CAR_SIZE=64;
 
-	public static final int CAR_VELOCITY=2000;
-	public static final int OBJECT_VELOCITY=1000;
+	public static final int CAR_VELOCITY=10;
+	public static final int OBJECT_VELOCITY=6;
 
 
 	public static final short CAR_BIT=1;

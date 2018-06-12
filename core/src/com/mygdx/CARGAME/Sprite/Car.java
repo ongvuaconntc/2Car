@@ -57,6 +57,7 @@ public class Car extends Sprite {
 
         defineCar(blue);
         carGoStraight=new TextureRegion(getTexture(),indexX,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE);
+        setBounds(0,0,CarGame.CAR_SIZE/CarGame.PPM,CarGame.CAR_SIZE/CarGame.PPM);
         setRegion(carGoStraight);
 
 
@@ -65,18 +66,18 @@ public class Car extends Sprite {
     public void defineCar(boolean blue){
         BodyDef bdef=new BodyDef();
         if (blue)
-        bdef.position.set(CarGame.WIDTH/8,26);
-        else bdef.position.set(7*CarGame.WIDTH/8,26);
+        bdef.position.set(CarGame.WIDTH/8/CarGame.PPM,50/CarGame.PPM);
+        else bdef.position.set(7*CarGame.WIDTH/8/CarGame.PPM,50/CarGame.PPM);
 
         bdef.type=BodyDef.BodyType.DynamicBody;
 
         b2body=world.createBody(bdef);
         b2body.applyTorque(0,true);
 
-      //  b2body.setLinearVelocity(new Vector2(0,0));
+      //  b2body.setLinearVelocity(new Vector2(0,30));
         FixtureDef fdef=new FixtureDef();
         CircleShape shape=new CircleShape();
-        shape.setRadius(20);
+        shape.setRadius(20/CarGame.PPM);
         fdef.filter.categoryBits= CarGame.CAR_BIT;
         fdef.filter.maskBits=CarGame.CIRCLE_BIT|CarGame.RECTANGLE_BIT|CarGame.GROUND_BIT;
         fdef.shape=shape;
@@ -86,7 +87,7 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         shape=new CircleShape();
-        shape.setRadius(25);
+        shape.setRadius(25/CarGame.PPM);
         fdef.shape=shape;
         fdef.isSensor=true;
         b2body.createFixture(fdef).setUserData("car");
@@ -94,19 +95,19 @@ public class Car extends Sprite {
         //barriers
         bdef=new BodyDef();
         if (blue)
-        bdef.position.set(CarGame.WIDTH/8-30,26);
-        else bdef.position.set(7*CarGame.WIDTH/8+30,26);
+        bdef.position.set((CarGame.WIDTH/8-30)/CarGame.PPM,50/CarGame.PPM);
+        else bdef.position.set((7*CarGame.WIDTH/8+30)/CarGame.PPM,50/CarGame.PPM);
         bdef.type=BodyDef.BodyType.StaticBody;
         Body body=world.createBody(bdef);
 
         fdef=new FixtureDef();
         Rectangle rect=new Rectangle();
         if (blue)
-        rect.set(CarGame.WIDTH/8-30,20,20,20);
+        rect.set((CarGame.WIDTH/8-30)/CarGame.PPM,44/CarGame.PPM,20/CarGame.PPM,20/CarGame.PPM);
         else
-            rect.set(7*CarGame.WIDTH/8+30,20,20,20);
+            rect.set((7*CarGame.WIDTH/8+30)/CarGame.PPM,44/CarGame.PPM,20/CarGame.PPM,20/CarGame.PPM);
         PolygonShape polygonShape=new PolygonShape();
-        polygonShape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+        polygonShape.setAsBox(rect.getWidth()/2/CarGame.PPM,rect.getHeight()/2/CarGame.PPM);
         fdef.filter.categoryBits= CarGame.GROUND_BIT;
         fdef.filter.maskBits=CarGame.CAR_BIT;
         fdef.shape=polygonShape;
@@ -115,8 +116,8 @@ public class Car extends Sprite {
 
         bdef=new BodyDef();
         if (blue)
-        bdef.position.set(3*CarGame.WIDTH/8+30,26);
-        else bdef.position.set(5*CarGame.WIDTH/8-30,26);
+        bdef.position.set((3*CarGame.WIDTH/8+30)/CarGame.PPM,50/CarGame.PPM);
+        else bdef.position.set((5*CarGame.WIDTH/8-30)/CarGame.PPM,50/CarGame.PPM);
         bdef.type=BodyDef.BodyType.StaticBody;
         body=world.createBody(bdef);
 
@@ -125,12 +126,12 @@ public class Car extends Sprite {
         rect=new Rectangle();
 
         if (blue)
-        rect.set(3*CarGame.WIDTH/8+30,20,20,20);
+        rect.set((3*CarGame.WIDTH/8+30)/CarGame.PPM,44/CarGame.PPM,20/CarGame.PPM,20/CarGame.PPM);
         else
-            rect.set(5*CarGame.WIDTH/8-30,20,20,20);
+            rect.set((5*CarGame.WIDTH/8-30)/CarGame.PPM,44  /CarGame.PPM,20/CarGame.PPM,20/CarGame.PPM);
 
         polygonShape=new PolygonShape();
-        polygonShape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+        polygonShape.setAsBox(rect.getWidth()/2/CarGame.PPM,rect.getHeight()/2/CarGame.PPM);
 
         fdef.filter.categoryBits= CarGame.GROUND_BIT;
         fdef.filter.maskBits=CarGame.CAR_BIT;

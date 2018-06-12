@@ -46,6 +46,10 @@ public class PlayScreen implements Screen {
     private ReentrantLock lock;
     private boolean gameOver=false;
     private Texture capturedLastFrame;
+    private boolean touchOne=false;
+    private boolean touchTwo=false;
+
+    private float renderTime=0;
 
     private Box2DDebugRenderer  box2DDebugRenderer;
 
@@ -67,13 +71,13 @@ public class PlayScreen implements Screen {
         this.game=carGame;
 
         game_cam=new OrthographicCamera();
-        game_port=new StretchViewport(game.WIDTH,game.HEIGHT,game_cam);
+        game_port=new StretchViewport((game.WIDTH/game.PPM),(game.HEIGHT/game.PPM),game_cam);
         game_cam.position.set(game_port.getWorldWidth()/2,game_port.getWorldHeight()/2,0);
 
 
         hud=new Hud(game.batch);
         background=new Texture("background.jpg");
-        System.out.println("WIDTH:"+background.getWidth()+ " HEIGHT:"+background.getHeight());
+      //  System.out.println("WIDTH:"+background.getWidth()+ " HEIGHT:"+background.getHeight());
 
         world=new World(new Vector2(0,0),true);
         box2DDebugRenderer=new Box2DDebugRenderer();
@@ -84,6 +88,19 @@ public class PlayScreen implements Screen {
 
 
         world.setContactListener(new WorldContactListener());
+
+
+//        Pixmap pixmap = new Pixmap(Gdx.files.internal("background.jpg"));
+//        Pixmap pixmap1 = new Pixmap((int) game_port.getWorldWidth(), (int) game_port.getWorldHeight(), pixmap.getFormat());
+//        pixmap1.drawPixmap(pixmap,
+//                0, 0, pixmap.getWidth(), pixmap.getHeight(),
+//                0, 0, pixmap1.getWidth(), pixmap1.getHeight()
+//        );
+//        System.out.println("world height "+game_port.getWorldHeight()+" world width"+game_port.getWorldWidth()+"" +
+//                "pix Width"+pixmap.getWidth()+" pix Height"+pixmap.getHeight()+" pix1 Width"+pixmap1.getWidth()+" pix1 Height"+pixmap1.getHeight());
+//        background = new Texture(pixmap1);
+//        pixmap.dispose();
+//        pixmap1.dispose();
     }
 
     public TextureAtlas getAtlas() {
@@ -115,55 +132,66 @@ public class PlayScreen implements Screen {
     void handleInput(){
 
         if (Gdx.input.isTouched(0)){
-            float x=Gdx.input.getX(0);
-            float y=Gdx.input.getY(0);
-            Vector3 mousePos=new Vector3(x,y,0);
-            game_cam.unproject(mousePos);
-            x=mousePos.x;
-            y=mousePos.y;
-            if (x<CarGame.WIDTH/2) {
-                //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-                if (x > blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                } else if (x < blueCar.b2body.getPosition().x) {
-                    blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                }
-            }
-            else{
+            if (!touchOne) {
+                touchOne=true;
+                float x = Gdx.input.getX(0);
+                float y = Gdx.input.getY(0);
+                Vector3 mousePos = new Vector3(x, y, 0);
+                game_cam.unproject(mousePos);
+                x = mousePos.x;
+                y = mousePos.y;
+                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
+                    if (x > blueCar.b2body.getPosition().x) {
+                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                    } else if (x < blueCar.b2body.getPosition().x) {
+                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    }
+                } else {
 
-                if (x > redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                } else if (x < redCar.b2body.getPosition().x) {
-                    redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    if (x > redCar.b2body.getPosition().x) {
+                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                    } else if (x < redCar.b2body.getPosition().x) {
+                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    }
                 }
             }
 
         }
+        else{
+            touchOne=false;
+        }
 
         if (Gdx.input.isTouched(1)){
-            float x=Gdx.input.getX(1);
-            float y=Gdx.input.getY(1);
-            Vector3 mousePos=new Vector3(x,y,0);
-            game_cam.unproject(mousePos);
-            x=mousePos.x;
-            y=mousePos.y;
-            if (x<CarGame.WIDTH/2) {
-                //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-                if (blueCar.b2body.getLinearVelocity().x<0) {
-                    blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                } else if (blueCar.b2body.getLinearVelocity().x>0) {
-                    blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+
+            if (!touchTwo) {
+                touchTwo=false;
+                float x = Gdx.input.getX(1);
+                float y = Gdx.input.getY(1);
+                Vector3 mousePos = new Vector3(x, y, 0);
+                game_cam.unproject(mousePos);
+                x = mousePos.x;
+                y = mousePos.y;
+                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
+                    if (blueCar.b2body.getLinearVelocity().x < 0) {
+                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                    } else if (blueCar.b2body.getLinearVelocity().x > 0) {
+                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    }
+                } else {
+
+                    if (redCar.b2body.getLinearVelocity().x < 0) {
+                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                    } else if (redCar.b2body.getLinearVelocity().x > 0) {
+                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    }
                 }
             }
-            else{
 
-                if (redCar.b2body.getLinearVelocity().x<0) {
-                    redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                } else if (redCar.b2body.getLinearVelocity().x>0) {
-                    redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                }
-            }
-
+        }
+        else{
+            touchTwo=false;
         }
 
 
@@ -185,10 +213,10 @@ public class PlayScreen implements Screen {
 
     }
     void generateObjects(float delta){
-        if (generateTimer>2f){
+        if (generateTimer>1.5f){
             generateTimer=0;
         }
-        if (generateTimer2>2f + deltaTimer) {
+        if (generateTimer2>1.5f + deltaTimer) {
             generateTimer2 = deltaTimer;
         }
 
@@ -253,9 +281,10 @@ public class PlayScreen implements Screen {
     }
 
     void update(float delta){
+
         handleInput();
         generateObjects(delta);
-        world.step(1/60f,6,3);
+        world.step(1/120f,6,4);
 
 
 
@@ -300,7 +329,8 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(game_cam.combined);
         game.batch.begin();
-        game.batch.draw(background,0,0);
+
+        game.batch.draw(background,0,0,game_port.getWorldWidth(),game_port.getWorldHeight());
         blueCar.draw(game.batch);
         redCar.draw(game.batch);
         lock.lock();
