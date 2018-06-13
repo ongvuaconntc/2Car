@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -24,11 +25,12 @@ public class CircleObject extends RunningObject {
     public CircleObject (PlayScreen screen,World world, int left,String name){
         super(screen,world,left,name);
         shape=new CircleShape();
-        shape.setRadius(CarGame.OBJECT_SIZE/10/CarGame.PPM);
+        shape.setRadius(CarGame.OBJECT_SIZE/3/CarGame.PPM);
         FixtureDef fdef =new FixtureDef();
         fdef.shape=shape;
         fdef.filter.categoryBits= CarGame.CIRCLE_BIT;
         fdef.filter.maskBits=CarGame.CAR_BIT;
+        this.filter=fdef.filter;
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
 
@@ -42,10 +44,35 @@ public class CircleObject extends RunningObject {
 
     public void onHeadHit(){
 //        System.out.println("HIT HIT HIT");
+       // screen.addBody(body);
         screen.getHud().addScore();
-        screen.addBody(body);
-        screen.removeObject(this);
+        setFree();
     }
 
+    @Override
+    public void reset(int left) {
+      //  body.resetMassData();
+       // body.setActive(true);
+        switch (left){
+            case 0: body.setTransform(CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
+                break;
+            case 1:  body.setTransform(3*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
+                break;
+            case 2:  body.setTransform(5*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
+                break;
+            case 3:  body.setTransform(7*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
+                break;
+        }
 
+        body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
+
+        if (left<2)
+            this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        else
+            this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        filter.categoryBits= CarGame.CIRCLE_BIT;
+        filter.maskBits=CarGame.CAR_BIT;
+        fixture.setFilterData(filter);
+        setRegion(this.texture);
+    }
 }

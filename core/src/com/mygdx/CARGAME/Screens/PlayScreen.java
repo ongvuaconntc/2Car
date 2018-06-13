@@ -39,6 +39,8 @@ public class PlayScreen implements Screen {
     private TextureAtlas atlasObjects;
     private Texture background;
     private Array<RunningObject> listObjects;
+    private Array<RunningObject> listFreeObjects;
+
     private Array<Body> deadBodies;
     private float deltaTimer;
     private float generateTimer;
@@ -46,8 +48,9 @@ public class PlayScreen implements Screen {
     private ReentrantLock lock;
     private boolean gameOver=false;
     private Texture capturedLastFrame;
-    private boolean touchOne=false;
-    private boolean touchTwo=false;
+  //  private boolean touchOne=false;
+  //  private boolean touchTwo=false;
+    private boolean[] touch;
 
     private float renderTime=0;
 
@@ -57,6 +60,7 @@ public class PlayScreen implements Screen {
     private Car redCar;
 
     public PlayScreen(CarGame carGame){
+        touch=new boolean[20];
         atlas=new TextureAtlas("Car.pack");
 
         atlasObjects=new TextureAtlas("Object.pack");
@@ -130,69 +134,69 @@ public class PlayScreen implements Screen {
 
 
     void handleInput(){
+        for (int i=0;i<20;i++) {
+            if (Gdx.input.isTouched(i)) {
+                if (!touch[i]) {
+                    touch[i] = true;
+                    float x = Gdx.input.getX(i);
+                    float y = Gdx.input.getY(i);
+                    Vector3 mousePos = new Vector3(x, y, 0);
+                    game_cam.unproject(mousePos);
+                    x = mousePos.x;
+                    y = mousePos.y;
+                    if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+                        //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
+                        if (x > blueCar.b2body.getPosition().x) {
+                            blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        } else if (x < blueCar.b2body.getPosition().x) {
+                            blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        }
+                    } else {
 
-        if (Gdx.input.isTouched(0)){
-            if (!touchOne) {
-                touchOne=true;
-                float x = Gdx.input.getX(0);
-                float y = Gdx.input.getY(0);
-                Vector3 mousePos = new Vector3(x, y, 0);
-                game_cam.unproject(mousePos);
-                x = mousePos.x;
-                y = mousePos.y;
-                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-                    if (x > blueCar.b2body.getPosition().x) {
-                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                    } else if (x < blueCar.b2body.getPosition().x) {
-                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                    }
-                } else {
-
-                    if (x > redCar.b2body.getPosition().x) {
-                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                    } else if (x < redCar.b2body.getPosition().x) {
-                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                    }
-                }
-            }
-
-        }
-        else{
-            touchOne=false;
-        }
-
-        if (Gdx.input.isTouched(1)){
-
-            if (!touchTwo) {
-                touchTwo=false;
-                float x = Gdx.input.getX(1);
-                float y = Gdx.input.getY(1);
-                Vector3 mousePos = new Vector3(x, y, 0);
-                game_cam.unproject(mousePos);
-                x = mousePos.x;
-                y = mousePos.y;
-                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-                    if (blueCar.b2body.getLinearVelocity().x < 0) {
-                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                    } else if (blueCar.b2body.getLinearVelocity().x > 0) {
-                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                    }
-                } else {
-
-                    if (redCar.b2body.getLinearVelocity().x < 0) {
-                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                    } else if (redCar.b2body.getLinearVelocity().x > 0) {
-                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        if (x > redCar.b2body.getPosition().x) {
+                            redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        } else if (x < redCar.b2body.getPosition().x) {
+                            redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        }
                     }
                 }
-            }
 
+            } else {
+                touch[i] = false;
+            }
         }
-        else{
-            touchTwo=false;
-        }
+
+//        if (Gdx.input.isTouched(1)){
+//
+//            if (!touchTwo) {
+//                touchTwo=false;
+//                float x = Gdx.input.getX(1);
+//                float y = Gdx.input.getY(1);
+//                Vector3 mousePos = new Vector3(x, y, 0);
+//                game_cam.unproject(mousePos);
+//                x = mousePos.x;
+//                y = mousePos.y;
+//                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+//                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
+//                    if (blueCar.b2body.getLinearVelocity().x < 0) {
+//                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+//                    } else if (blueCar.b2body.getLinearVelocity().x > 0) {
+//                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+//                    }
+//                } else {
+//
+//                    if (redCar.b2body.getLinearVelocity().x < 0) {
+//                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+//                    } else if (redCar.b2body.getLinearVelocity().x > 0) {
+//                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+//                    }
+//                }
+//            }
+//
+//        }
+//        else{
+//            touchTwo=false;
+//        }
 
 
     }
@@ -212,11 +216,19 @@ public class PlayScreen implements Screen {
 
 
     }
+    boolean findObject(Class t,int left){
+        for (RunningObject ob:listObjects)
+            if (ob.getClass().isAssignableFrom(t)&&ob.fixture.getFilterData().categoryBits==CarGame.DESTROYED_BIT){
+                ob.reset(left);
+                return true;
+            }
+        return false;
+    }
     void generateObjects(float delta){
-        if (generateTimer>1.5f){
+        if (generateTimer>0.7f){
             generateTimer=0;
         }
-        if (generateTimer2>1.5f + deltaTimer) {
+        if (generateTimer2>0.7f + deltaTimer) {
             generateTimer2 = deltaTimer;
         }
 
@@ -226,24 +238,19 @@ public class PlayScreen implements Screen {
             boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2);
-
-                CircleObject co = new CircleObject(this, world, left,"circle");
-                lock.lock();
-                try {
+                boolean good=findObject(CircleObject.class,left);
+                if (!good) {
+                    CircleObject co = new CircleObject(this, world, left, "circle");
                     listObjects.add(co);
-                } finally {
-                    lock.unlock();
                 }
             }
             else{
                 int left = random.nextInt(2);
-                RectangleObject co = new RectangleObject(this, world, left,"rectangle");
-                lock.lock();
-                try {
+                boolean good=findObject(RectangleObject.class,left);
+                if (!good) {
+                    RectangleObject co = new RectangleObject(this, world, left, "rectangle");
                     listObjects.add(co);
-                } finally {
-                    lock.unlock();
-                }
+                 }
             }
         }
 
@@ -253,68 +260,59 @@ public class PlayScreen implements Screen {
             boolean circle=random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2)+2;
-                CircleObject co = new CircleObject(this, world, left,"circle_red");
-                lock.lock();
-                try {
+                boolean good=findObject(CircleObject.class,left);
+                if (!good) {
+                    CircleObject co = new CircleObject(this, world, left, "circle_red");
                     listObjects.add(co);
-                } finally {
-                    lock.unlock();
                 }
+
             }
             else{
                 int left = random.nextInt(2)+2;
-                RectangleObject co = new RectangleObject(this, world, left,"rectangle_red");
-                lock.lock();
-                try {
+                boolean good=findObject(RectangleObject.class,left);
+                if (!good) {
+                    RectangleObject co = new RectangleObject(this, world, left, "rectangle_red");
                     listObjects.add(co);
-                } finally {
-                    lock.unlock();
                 }
             }
 
 
 
         }
-//        generateTimer+=delta;
-        generateTimer += 0.015;
-        generateTimer2 += 0.015;
+        generateTimer+=delta;
+        generateTimer2+=delta;
+
+        // generateTimer += 0.015;
+      //  generateTimer2 += 0.015;
     }
 
     void update(float delta){
 
         handleInput();
         generateObjects(delta);
-        world.step(1/120f,6,4);
+        world.step(1/60f,6,2);
 
 
 
         blueCar.update(delta);
         redCar.update(delta);
 
-        lock.lock();
-        try {
-            for (RunningObject co : listObjects) {
-                co.update(delta);
-                if (co.body.getPosition().y < 0) {
-                    listObjects.removeValue(co, false);
-                    deadBodies.add(co.body);
-                    if (CircleObject.class.isAssignableFrom(co.getClass())){
-                        setGameOver(true);
-                    }
+       // lock.lock();
+
+        for (RunningObject co : listObjects)
+        if (co.filter.categoryBits!=CarGame.DESTROYED_BIT){
+            co.update(delta);
+            if (co.body.getPosition().y < 0) {
+                if (CircleObject.class.isAssignableFrom(co.getClass())){
+                    setGameOver(true);
                 }
             }
         }
-        finally {
-            lock.unlock();
-        }
-        System.out.println("dead bodies size"+deadBodies.size);
 
-        while (deadBodies.size>0){
-            Body body=deadBodies.get(0);
-            deadBodies.removeIndex(0);
-            world.destroyBody(body);
-            body.setUserData(null);
-        }
+
+//        System.out.println("dead bodies size"+deadBodies.size);
+//
+//s
     //   System.out.println("list Objects size"+listObjects.size);
     }
 
@@ -333,24 +331,19 @@ public class PlayScreen implements Screen {
         game.batch.draw(background,0,0,game_port.getWorldWidth(),game_port.getWorldHeight());
         blueCar.draw(game.batch);
         redCar.draw(game.batch);
-        lock.lock();
-        try {
-            for (RunningObject co : listObjects) {
-                co.draw(game.batch);
-            }
-        }
-        finally {
-            lock.unlock();
-        }
+
+        for (RunningObject co : listObjects)
+            co.draw(game.batch);
+
         game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
-//        box2DDebugRenderer.render(world,game_cam.combined);
+        box2DDebugRenderer.render(world,game_cam.combined);
 
         if (gameOver){
             ScreenshotFactory sf = new ScreenshotFactory();
-            Pixmap pixmap = sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            Pixmap pixmap = sf.getScreenshot(0, 0, (int)game_port.getWorldWidth(), (int) game_port.getWorldHeight(), true);
             Pixmap pixmap1 = new Pixmap((int) game_port.getWorldWidth(), (int) game_port.getWorldHeight(), pixmap.getFormat());
             pixmap1.drawPixmap(pixmap,
                     0, 0, pixmap.getWidth(), pixmap.getHeight(),
