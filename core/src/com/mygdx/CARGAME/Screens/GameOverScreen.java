@@ -71,7 +71,7 @@ public class GameOverScreen implements Screen {
 
         game.batch.setProjectionMatrix(game_cam.combined);
         game.batch.begin();
-        game.batch.draw(capturedLastFrame,0,0);
+        game.batch.draw(capturedLastFrame,0,0,viewport.getWorldWidth(),viewport.getWorldHeight());
         game.batch.end();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
