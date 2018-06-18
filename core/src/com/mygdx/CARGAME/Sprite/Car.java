@@ -103,9 +103,9 @@ public class Car extends Sprite {
         fdef=new FixtureDef();
         Rectangle rect=new Rectangle();
         if (blue)
-        rect.set((CarGame.WIDTH/8-11)/CarGame.PPM,94/CarGame.PPM,360/CarGame.PPM,360/CarGame.PPM);
+        rect.set((CarGame.WIDTH/8-11)/CarGame.PPM,94/CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
         else
-            rect.set((7*CarGame.WIDTH/8+11)/CarGame.PPM,94/CarGame.PPM,360/CarGame.PPM,360/CarGame.PPM);
+            rect.set((7*CarGame.WIDTH/8+11)/CarGame.PPM,94/CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
         PolygonShape polygonShape=new PolygonShape();
         polygonShape.setAsBox(rect.getWidth()/2/CarGame.PPM,rect.getHeight()/2/CarGame.PPM);
         fdef.filter.categoryBits= CarGame.GROUND_BIT;
@@ -126,9 +126,9 @@ public class Car extends Sprite {
         rect=new Rectangle();
 
         if (blue)
-        rect.set((3*CarGame.WIDTH/8+11)/CarGame.PPM,94/CarGame.PPM,360/CarGame.PPM,360/CarGame.PPM);
+        rect.set((3*CarGame.WIDTH/8+11)/CarGame.PPM,94/CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
         else
-            rect.set((5*CarGame.WIDTH/8-11)/CarGame.PPM,94  /CarGame.PPM,360/CarGame.PPM,360/CarGame.PPM);
+            rect.set((5*CarGame.WIDTH/8-11)/CarGame.PPM,94  /CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
 
         polygonShape=new PolygonShape();
         polygonShape.setAsBox(rect.getWidth()/2/CarGame.PPM,rect.getHeight()/2/CarGame.PPM);

@@ -6,7 +6,7 @@ import com.mygdx.CARGAME.Screens.PlayScreen;
 
 public class CarGame extends Game {
 	public SpriteBatch batch;
-	public static final float PPM=40;
+	public static final float PPM=45;
 	public static final int WIDTH=360;
     public static final int HEIGHT=640;
     public static final int OBJECT_SIZE=32;
