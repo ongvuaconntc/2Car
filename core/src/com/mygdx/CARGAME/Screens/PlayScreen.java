@@ -1,6 +1,8 @@
 package com.mygdx.CARGAME.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -107,6 +109,39 @@ public class PlayScreen implements Screen {
 //        pixmap1.dispose();
 
         initTouchStatus();
+
+        Gdx.input.setInputProcessor(new InputAdapter(){
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+                   // touch[pointer] = true;
+                    float x = Gdx.input.getX(pointer);
+                    float y = Gdx.input.getY(pointer);
+                    Vector3 mousePos = new Vector3(x, y, 0);
+                    game_cam.unproject(mousePos);
+                    System.out.println("unproject "+mousePos.x+" "+mousePos.y);
+                    x = mousePos.x;
+                    y = mousePos.y;
+                    if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+                        if (touchOne) {
+                            touchOne = false;
+                            blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        } else {
+                            blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                            touchOne = true;
+                        }
+                    } else {
+                        if (touchTwo) {
+                            touchTwo = false;
+                            redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        } else {
+                            touchTwo = true;
+                            redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        }
+                    }
+                return true;
+            }
+        });
     }
 
     public TextureAtlas getAtlas() {
@@ -211,6 +246,7 @@ public class PlayScreen implements Screen {
                     float y = Gdx.input.getY(i);
                     Vector3 mousePos = new Vector3(x, y, 0);
                     game_cam.unproject(mousePos);
+                    System.out.println("unproject "+mousePos.x+" "+mousePos.y);
                     x = mousePos.x;
                     y = mousePos.y;
                     if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
@@ -326,7 +362,7 @@ public class PlayScreen implements Screen {
 
     void update(float delta){
 
-        handleInput();
+     //   handleInput();
         generateObjects(delta);
         world.step(1/60f,6,2);
 
