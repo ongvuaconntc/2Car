@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +17,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -42,6 +49,8 @@ public class PlayScreen implements Screen {
     private Texture background;
     private Array<RunningObject> listObjects;
     private Array<RunningObject> listFreeObjects;
+    private static Label scoreLabel;
+    private Table tableScore;
 
     private Array<Body> deadBodies;
     private float deltaTimer;
@@ -94,20 +103,6 @@ public class PlayScreen implements Screen {
 
 
         world.setContactListener(new WorldContactListener());
-
-
-//        Pixmap pixmap = new Pixmap(Gdx.files.internal("background.jpg"));
-//        Pixmap pixmap1 = new Pixmap((int) game_port.getWorldWidth(), (int) game_port.getWorldHeight(), pixmap.getFormat());
-//        pixmap1.drawPixmap(pixmap,
-//                0, 0, pixmap.getWidth(), pixmap.getHeight(),
-//                0, 0, pixmap1.getWidth(), pixmap1.getHeight()
-//        );
-//        System.out.println("world height "+game_port.getWorldHeight()+" world width"+game_port.getWorldWidth()+"" +
-//                "pix Width"+pixmap.getWidth()+" pix Height"+pixmap.getHeight()+" pix1 Width"+pixmap1.getWidth()+" pix1 Height"+pixmap1.getHeight());
-//        background = new Texture(pixmap1);
-//        pixmap.dispose();
-//        pixmap1.dispose();
-
         initTouchStatus();
 
         Gdx.input.setInputProcessor(new InputAdapter(){
@@ -119,7 +114,6 @@ public class PlayScreen implements Screen {
                     float y = Gdx.input.getY(pointer);
                     Vector3 mousePos = new Vector3(x, y, 0);
                     game_cam.unproject(mousePos);
-                    System.out.println("unproject "+mousePos.x+" "+mousePos.y);
                     x = mousePos.x;
                     y = mousePos.y;
                     if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
@@ -142,6 +136,7 @@ public class PlayScreen implements Screen {
                 return true;
             }
         });
+        initDrawScore(hud.stage);
     }
 
     public TextureAtlas getAtlas() {
@@ -173,106 +168,6 @@ public class PlayScreen implements Screen {
         touchOne = true; // init true (car one on left lane)
         touchTwo = false; // init false (car two on the right lane)
         touch=new boolean[20];
-    }
-
-    void handleInput(){
-//        for (int i=0;i<20;i++) {
-//            if (Gdx.input.isTouched(i)) {
-//                if (!touch[i]) {
-//                    touch[i] = true;
-//                    float x = Gdx.input.getX(i);
-//                    float y = Gdx.input.getY(i);
-//                    Vector3 mousePos = new Vector3(x, y, 0);
-//                    game_cam.unproject(mousePos);
-//                    x = mousePos.x;
-//                    y = mousePos.y;
-//                    if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-//                        if (x > blueCar.b2body.getPosition().x) {
-//                            blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-//                        } else if (x < blueCar.b2body.getPosition().x) {
-//                            blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-//                        }
-//                    } else {
-//
-//                        if (x > redCar.b2body.getPosition().x) {
-//                            redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-//                        } else if (x < redCar.b2body.getPosition().x) {
-//                            redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-//                        }
-//                    }
-//                }
-//
-//            } else {
-//                touch[i] = false;
-//            }
-//        }
-
-//        if (Gdx.input.isTouched(1)){
-//
-//            if (!touchTwo) {
-//                touchTwo=false;
-//                float x = Gdx.input.getX(1);
-//                float y = Gdx.input.getY(1);
-//                Vector3 mousePos = new Vector3(x, y, 0);
-//                game_cam.unproject(mousePos);
-//                x = mousePos.x;
-//                y = mousePos.y;
-//                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-//                    //       System.out.println("blue Car x Position "+blueCar.b2body.getPosition().x);
-//                    if (blueCar.b2body.getLinearVelocity().x < 0) {
-//                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-//                    } else if (blueCar.b2body.getLinearVelocity().x > 0) {
-//                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-//                    }
-//                } else {
-//
-//                    if (redCar.b2body.getLinearVelocity().x < 0) {
-//                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-//                    } else if (redCar.b2body.getLinearVelocity().x > 0) {
-//                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-//                    }
-//                }
-//            }
-//
-//        }
-//        else{
-//            touchTwo=false;
-//        }
-        for (int i=0;i<20;i++) {
-            if (Gdx.input.isTouched(i)) {
-                if (!touch[i]) {
-                    touch[i] = true;
-                    float x = Gdx.input.getX(i);
-                    float y = Gdx.input.getY(i);
-                    Vector3 mousePos = new Vector3(x, y, 0);
-                    game_cam.unproject(mousePos);
-                    System.out.println("unproject "+mousePos.x+" "+mousePos.y);
-                    x = mousePos.x;
-                    y = mousePos.y;
-                    if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-                        if (touchOne) {
-                            touchOne = false;
-                            blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        } else {
-                            blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                            touchOne = true;
-                        }
-                    } else {
-                        if (touchTwo) {
-                            touchTwo = false;
-                            redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        } else {
-                            touchTwo = true;
-                            redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                        }
-                    }
-                }
-
-            } else {
-                touch[i] = false;
-            }
-        }
-
     }
 
     public Hud getHud() {
@@ -353,17 +248,16 @@ public class PlayScreen implements Screen {
 
 
         }
-        generateTimer+=delta;
-        generateTimer2+=delta;
+//        generateTimer+=delta;
+//        generateTimer2+=delta;
 
-        // generateTimer += 0.015;
-      //  generateTimer2 += 0.015;
+         generateTimer += 0.015;
+         generateTimer2 += 0.015;
     }
 
     void update(float delta){
-
-     //   handleInput();
         generateObjects(delta);
+        updateScore();
         world.step(1/60f,6,2);
 
 
@@ -391,8 +285,6 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
-
         game.batch.setProjectionMatrix(game_cam.combined);
         game.batch.begin();
 
@@ -406,7 +298,6 @@ public class PlayScreen implements Screen {
         game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.stage.draw();
 //        box2DDebugRenderer.render(world,game_cam.combined);
 
         if (gameOver){
@@ -415,6 +306,7 @@ public class PlayScreen implements Screen {
             game.setScreen(new GameOverScreen(game, capturedLastFrame));
             dispose();
         }
+        hud.stage.draw();
     }
 
     public void getLastFrame() {
@@ -454,5 +346,24 @@ public class PlayScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         game_port.update(width,height);
+    }
+
+    public void initDrawScore(Stage stage){
+        tableScore =new Table();
+        tableScore.top();
+        tableScore.right();
+        tableScore.setFillParent(true);
+        scoreLabel=new Label(String.format("%d",hud.getScore()),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        tableScore.add(scoreLabel).padRight(10);
+        stage.addActor(tableScore);
+    }
+
+
+    public void updateScore() {
+        scoreLabel.setText(String.format("%d",hud.getScore()));
+    }
+
+    public void removeActorTableScore() {
+
     }
 }
