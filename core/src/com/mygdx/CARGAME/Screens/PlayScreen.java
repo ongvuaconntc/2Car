@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,10 +20,15 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -30,6 +37,7 @@ import com.mygdx.CARGAME.Sprite.Car;
 import com.mygdx.CARGAME.Sprite.CircleObject;
 import com.mygdx.CARGAME.Sprite.RectangleObject;
 import com.mygdx.CARGAME.Sprite.RunningObject;
+import com.mygdx.CARGAME.Tools.SmartFontGenerator;
 import com.mygdx.CARGAME.Tools.WorldContactListener;
 import com.mygdx.CARGAME.scenes.Hud;
 import com.mygdx.entity.ScreenshotFactory;
@@ -50,93 +58,114 @@ public class PlayScreen implements Screen {
     private Array<RunningObject> listObjects;
     private Array<RunningObject> listFreeObjects;
     private static Label scoreLabel;
-    private Table tableScore;
+    private static int score;
+    ImageButton pauseButton;
 
     private Array<Body> deadBodies;
     private float deltaTimer;
     private float generateTimer;
     private float generateTimer2;
     private ReentrantLock lock;
-    private boolean gameOver=false;
+    private boolean gameOver = false;
     private Texture capturedLastFrame;
     private static boolean touchOne;
     private static boolean touchTwo;
     private boolean[] touch;
 
-    private float renderTime=0;
+    public enum State {
+        PAUSE,
+        RUN,
+        RESUME,
+        STOPPED
+    }
 
-    private Box2DDebugRenderer  box2DDebugRenderer;
+    private State state = State.RUN;
+
+
+    private float renderTime = 0;
+
+    private Box2DDebugRenderer box2DDebugRenderer;
 
     private Car blueCar;
     private Car redCar;
 
-    public PlayScreen(CarGame carGame){
-        touch=new boolean[20];
-        atlas=new TextureAtlas("Car.pack");
+    public PlayScreen(CarGame carGame) {
+        touch = new boolean[20];
+        atlas = new TextureAtlas("Car.pack");
 
-        atlasObjects=new TextureAtlas("Object.pack");
-        listObjects=new Array<RunningObject>();
-        deadBodies=new Array<Body>();
-        lock=new ReentrantLock();
+        atlasObjects = new TextureAtlas("Object.pack");
+        listObjects = new Array<RunningObject>();
+        deadBodies = new Array<Body>();
+        lock = new ReentrantLock();
         deltaTimer = 0.6f;
-        generateTimer=0;
+        generateTimer = 0;
         generateTimer2 = 0;
 
 
-        this.game=carGame;
+        this.game = carGame;
 
-        game_cam=new OrthographicCamera();
-        game_port=new StretchViewport((game.WIDTH/game.PPM),(game.HEIGHT/game.PPM),game_cam);
-        game_cam.position.set(game_port.getWorldWidth()/2,game_port.getWorldHeight()/2,0);
+        game_cam = new OrthographicCamera();
+        game_port = new StretchViewport((game.WIDTH / game.PPM), (game.HEIGHT / game.PPM), game_cam);
+        game_cam.position.set(game_port.getWorldWidth() / 2, game_port.getWorldHeight() / 2, 0);
 
 
-        hud=new Hud(game.batch);
-        background=new Texture("background.jpg");
-      //  System.out.println("WIDTH:"+background.getWidth()+ " HEIGHT:"+background.getHeight());
+        hud = new Hud(game.batch);
+        background = new Texture("background.jpg");
+        //  System.out.println("WIDTH:"+background.getWidth()+ " HEIGHT:"+background.getHeight());
 
-        world=new World(new Vector2(0,0),true);
-        box2DDebugRenderer=new Box2DDebugRenderer();
+        world = new World(new Vector2(0, 0), true);
+        box2DDebugRenderer = new Box2DDebugRenderer();
 
-        blueCar=new Car(world,this,true,"Car_Blue");
-        redCar=new Car(world,this,false,"Car_Red");
-
+        blueCar = new Car(world, this, true, "Car_Blue");
+        redCar = new Car(world, this, false, "Car_Red");
 
 
         world.setContactListener(new WorldContactListener());
         initTouchStatus();
 
-        Gdx.input.setInputProcessor(new InputAdapter(){
+        Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-                   // touch[pointer] = true;
-                    float x = Gdx.input.getX(pointer);
-                    float y = Gdx.input.getY(pointer);
-                    Vector3 mousePos = new Vector3(x, y, 0);
-                    game_cam.unproject(mousePos);
-                    x = mousePos.x;
-                    y = mousePos.y;
-                    if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
-                        if (touchOne) {
-                            touchOne = false;
-                            blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        } else {
-                            blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                            touchOne = true;
-                        }
+                // touch[pointer] = true;
+                float x = Gdx.input.getX(pointer);
+                float y = Gdx.input.getY(pointer);
+                Vector3 mousePos = new Vector3(x, y, 0);
+                game_cam.unproject(mousePos);
+                x = mousePos.x;
+                y = mousePos.y;
+                float btnX = pauseButton.getX() / game.PPM;
+                float btnWidth = pauseButton.getWidth() / game.PPM;
+                float btnY = pauseButton.getY() / game.PPM;
+                float btnHeight = pauseButton.getHeight() / game.PPM;
+                if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+                    btnPauseClick();
+                    return true;
+                }
+                if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
+                    if (touchOne) {
+                        touchOne = false;
+                        blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                     } else {
-                        if (touchTwo) {
-                            touchTwo = false;
-                            redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        } else {
-                            touchTwo = true;
-                            redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                        }
+                        blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        touchOne = true;
                     }
+                } else {
+                    if (touchTwo) {
+                        touchTwo = false;
+                        redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                    } else {
+                        touchTwo = true;
+                        redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                    }
+                }
+                System.out.println("pause button x: " + btnX + " x': " + x + " x+w: " + (btnX + btnWidth) + " y: " + btnY + "    y': " + y + " y-h:" + (btnY + btnHeight));
+
                 return true;
             }
         });
         initDrawScore(hud.stage);
+        initDrawPauseBtn(hud.stage);
     }
 
     public TextureAtlas getAtlas() {
@@ -156,7 +185,7 @@ public class PlayScreen implements Screen {
 
     }
 
-    public void addBody(Body body){
+    public void addBody(Body body) {
         deadBodies.add(body);
     }
 
@@ -164,81 +193,81 @@ public class PlayScreen implements Screen {
         this.gameOver = gameOver;
     }
 
-    public void initTouchStatus() {
+    private void initTouchStatus() {
         touchOne = true; // init true (car one on left lane)
         touchTwo = false; // init false (car two on the right lane)
-        touch=new boolean[20];
+        touch = new boolean[20];
     }
 
     public Hud getHud() {
         return hud;
     }
-    public void removeObject( RunningObject co){
+
+    public void removeObject(RunningObject co) {
         lock.lock();
         System.out.println("try remove object object");
-        try{
-            listObjects.removeValue(co,false);
-        }
-        finally {
+        try {
+            listObjects.removeValue(co, false);
+        } finally {
             lock.unlock();
         }
 
 
     }
-    boolean findObject(Class t,int left){
-        for (RunningObject ob:listObjects)
-            if (ob.getClass().isAssignableFrom(t)&&ob.fixture.getFilterData().categoryBits==CarGame.DESTROYED_BIT){
+
+    private boolean findObject(Class t, int left) {
+        for (RunningObject ob : listObjects)
+            if (ob.getClass().isAssignableFrom(t) && ob.fixture.getFilterData().categoryBits == CarGame.DESTROYED_BIT) {
                 ob.reset(left);
                 return true;
             }
         return false;
     }
-    void generateObjects(float delta){
-        if (generateTimer>0.7f){
-            generateTimer=0;
+
+    private void generateObjects(float delta) {
+        if (generateTimer > 0.7f) {
+            generateTimer = 0;
         }
-        if (generateTimer2>0.7f + deltaTimer) {
+        if (generateTimer2 > 0.7f + deltaTimer) {
             generateTimer2 = deltaTimer;
         }
 
-        if (generateTimer==0f) {
+        if (generateTimer == 0f) {
 
             Random random = new Random();
-            boolean circle=random.nextBoolean();
+            boolean circle = random.nextBoolean();
             if (circle) {
                 int left = random.nextInt(2);
-                boolean good=findObject(CircleObject.class,left);
+                boolean good = findObject(CircleObject.class, left);
                 if (!good) {
                     CircleObject co = new CircleObject(this, world, left, "circle");
                     listObjects.add(co);
                 }
-            }
-            else{
+            } else {
                 int left = random.nextInt(2);
-                boolean good=findObject(RectangleObject.class,left);
+                boolean good = findObject(RectangleObject.class, left);
                 if (!good) {
                     RectangleObject co = new RectangleObject(this, world, left, "rectangle");
                     listObjects.add(co);
-                 }
+                }
             }
         }
 
-        if (generateTimer2>=deltaTimer - 0.01 && generateTimer2 < deltaTimer + 0.01) {
+        if (generateTimer2 >= deltaTimer - 0.01 && generateTimer2 < deltaTimer + 0.01) {
 
             Random random = new Random();
-            boolean circle=random.nextBoolean();
+            boolean circle = random.nextBoolean();
             if (circle) {
-                int left = random.nextInt(2)+2;
-                boolean good=findObject(CircleObject.class,left);
+                int left = random.nextInt(2) + 2;
+                boolean good = findObject(CircleObject.class, left);
                 if (!good) {
                     CircleObject co = new CircleObject(this, world, left, "circle_red");
                     listObjects.add(co);
                 }
 
-            }
-            else{
-                int left = random.nextInt(2)+2;
-                boolean good=findObject(RectangleObject.class,left);
+            } else {
+                int left = random.nextInt(2) + 2;
+                boolean good = findObject(RectangleObject.class, left);
                 if (!good) {
                     RectangleObject co = new RectangleObject(this, world, left, "rectangle_red");
                     listObjects.add(co);
@@ -246,73 +275,82 @@ public class PlayScreen implements Screen {
             }
 
 
-
         }
 //        generateTimer+=delta;
 //        generateTimer2+=delta;
 
-         generateTimer += 0.015;
-         generateTimer2 += 0.015;
+        generateTimer += 0.015;
+        generateTimer2 += 0.015;
     }
 
-    void update(float delta){
+    private void update(float delta) {
         generateObjects(delta);
         updateScore();
-        world.step(1/60f,6,2);
-
+        world.step(1 / 60f, 6, 2);
 
 
         blueCar.update(delta);
         redCar.update(delta);
 
-       // lock.lock();
+        // lock.lock();
 
         for (RunningObject co : listObjects)
-        if (co.filter.categoryBits!=CarGame.DESTROYED_BIT){
-            co.update(delta);
-            if (co.body.getPosition().y < 0) {
-                if (CircleObject.class.isAssignableFrom(co.getClass())){
-                    setGameOver(true);
+            if (co.filter.categoryBits != CarGame.DESTROYED_BIT) {
+                co.update(delta);
+                if (co.body.getPosition().y < 0) {
+                    if (CircleObject.class.isAssignableFrom(co.getClass())) {
+                        setGameOver(true);
+                    }
                 }
             }
-        }
     }
 
     @Override
     public void render(float delta) {
-        update(delta);
+        switch (state) {
+            case RUN:
+                update(delta);
 
-        Gdx.gl.glClearColor(0,0,0,1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                Gdx.gl.glClearColor(0, 0, 0, 1);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        game.batch.setProjectionMatrix(game_cam.combined);
-        game.batch.begin();
+                game.batch.setProjectionMatrix(game_cam.combined);
+                game.batch.begin();
 
-        game.batch.draw(background,0,0,game_port.getWorldWidth(),game_port.getWorldHeight());
-        blueCar.draw(game.batch);
-        redCar.draw(game.batch);
+                game.batch.draw(background, 0, 0, game_port.getWorldWidth(), game_port.getWorldHeight());
+                blueCar.draw(game.batch);
+                redCar.draw(game.batch);
 
-        for (RunningObject co : listObjects)
-            co.draw(game.batch);
+                for (RunningObject co : listObjects)
+                    co.draw(game.batch);
 
-        game.batch.end();
+                game.batch.end();
 
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+                game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 //        box2DDebugRenderer.render(world,game_cam.combined);
-
-        if (gameOver){
-            initTouchStatus();//reset touch status
-            getLastFrame();
-            game.setScreen(new GameOverScreen(game, capturedLastFrame));
-            dispose();
+                hud.stage.draw();
+                if (gameOver) {
+                    initTouchStatus();//reset touch status
+                    getLastFrame();
+                    game.setScreen(new GameOverScreen(game, capturedLastFrame, score));
+                    dispose();
+                }
+                break;
+            case PAUSE:
+                break;
+            case RESUME:
+                break;
+            default:
+                break;
         }
-        hud.stage.draw();
+
+
     }
 
-    public void getLastFrame() {
+    private void getLastFrame() {
         ScreenshotFactory sf = new ScreenshotFactory();
         Pixmap pixmap = sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        Pixmap pixmap1 = new Pixmap((int) game_port.getScreenWidth(), (int) game_port.getScreenHeight(), pixmap.getFormat());
+        Pixmap pixmap1 = new Pixmap(game_port.getScreenWidth(), game_port.getScreenHeight(), pixmap.getFormat());
         pixmap1.drawPixmap(pixmap,
                 0, 0, pixmap.getWidth(), pixmap.getHeight(),
                 0, 0, pixmap1.getWidth(), pixmap1.getHeight()
@@ -345,25 +383,65 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game_port.update(width,height);
+        game_port.update(width, height);
     }
 
-    public void initDrawScore(Stage stage){
-        tableScore =new Table();
+    private void initDrawScore(Stage stage) {
+        Table tableScore = new Table();
         tableScore.top();
         tableScore.right();
         tableScore.setFillParent(true);
-        scoreLabel=new Label(String.format("%d",hud.getScore()),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        tableScore.add(scoreLabel).padRight(10);
+        SmartFontGenerator fontGen = new SmartFontGenerator();
+        FileHandle exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
+        BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-medium", 36);
+        Label.LabelStyle smallStyle = new Label.LabelStyle();
+        smallStyle.font = fontSmall;
+
+        scoreLabel = new Label(String.format("%d", hud.getScore()), new Label.LabelStyle(fontSmall, Color.WHITE));
+        tableScore.add(scoreLabel).padRight(10).padTop(5);
         stage.addActor(tableScore);
     }
 
+    private void initDrawPauseBtn(Stage stage) {
+        Texture pauseTexture = new Texture("pauseBtn.png");
+        Drawable drawable = new TextureRegionDrawable(new TextureRegion(pauseTexture));
+        pauseButton = new ImageButton(drawable);
+        pauseButton.setSize(game.WIDTH / 10, game.WIDTH / 10);
+        pauseButton.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                btnPauseClick();
+            }
 
-    public void updateScore() {
-        scoreLabel.setText(String.format("%d",hud.getScore()));
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down");
+                return true;
+            }
+        });
+        pauseButton.setPosition(10, hud.stage.getHeight() - pauseButton.getHeight() - 10);
+        hud.stage.addActor(pauseButton);
     }
 
-    public void removeActorTableScore() {
+    private void btnPauseClick() {
+        state = State.PAUSE;
+    }
 
+
+    private void updateScore() {
+        score = hud.getScore();
+        scoreLabel.setText(String.format("%d", score));
+    }
+
+    public void setHud(Hud hud) {
+        this.hud = hud;
+    }
+
+    public static int getScore() {
+        return score;
+    }
+
+    public static void setScore(int score) {
+        PlayScreen.score = score;
     }
 }
