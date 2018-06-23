@@ -23,17 +23,17 @@ import com.mygdx.CARGAME.CarGame;
 import com.mygdx.CARGAME.Tools.SmartFontGenerator;
 import com.mygdx.CARGAME.scenes.Hud;
 
-public class GameOverScreen implements Screen {
+public class StartScreen implements Screen {
     private Hud hud;
     private Viewport viewport;
-    private Texture capturedLastFrame;
+    private Texture capturedFrame;
 
     private CarGame game;
     private OrthographicCamera game_cam;
 
-    public GameOverScreen(CarGame game, Texture lastFrame, int score) {
+    public StartScreen(CarGame game, Texture frame) {
         this.game = game;
-        this.capturedLastFrame = lastFrame;
+        this.capturedFrame = frame;
         game_cam = new OrthographicCamera();
         viewport = new StretchViewport((game.WIDTH / game.PPM), (game.HEIGHT / game.PPM), game_cam);
         game_cam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
@@ -41,29 +41,14 @@ public class GameOverScreen implements Screen {
         hud = new Hud(game.batch);
         Gdx.input.setInputProcessor(hud.stage);
 
-        BitmapFont f = new BitmapFont();
-        f.getData().setScale(2f);
-        Label.LabelStyle font = new Label.LabelStyle(f, Color.WHITE);
-
-        Table table = new Table();
-        table.center();
-        table.setFillParent(true);
-
-        Label gameOverLabel = new Label("GAME OVER", font);
-        Label playAgainLabel = new Label("Tap to Play Again", font);
-
-        table.add(gameOverLabel).expandX();
-        table.row();
-        table.add(playAgainLabel).expandX().padTop(10f);
-
-        Texture replayTexture = new Texture("replay.png");
+        Texture replayTexture = new Texture("play.png");
         Drawable drawable = new TextureRegionDrawable(new TextureRegion(replayTexture));
         ImageButton replayButton = new ImageButton(drawable);
         replayButton.setSize(game.WIDTH / 3, game.WIDTH / 3);
         replayButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnReplayClick();
+                btnStartClick();
             }
 
             @Override
@@ -72,14 +57,14 @@ public class GameOverScreen implements Screen {
                 return true;
             }
         });
-        replayButton.setPosition(hud.stage.getWidth() / 2 - replayButton.getWidth() / 2, hud.stage.getHeight() / 2 - 4 * replayButton.getHeight() / 3);
+        replayButton.setPosition(hud.stage.getWidth() / 2 - replayButton.getWidth() / 2, hud.stage.getHeight() / 2 - 4 * replayButton.getHeight() / 5);
         hud.stage.addActor(replayButton);
 
         SmartFontGenerator fontGen = new SmartFontGenerator();
         FileHandle exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
         BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 30);
         BitmapFont fontMedium = fontGen.createFont(exoFile, "exo-medium", 48);
-        BitmapFont fontLarge = fontGen.createFont(exoFile, "exo-large", 64);
+        BitmapFont fontLarge = fontGen.createFont(exoFile, "exo-large", 72);
 
 
         Label.LabelStyle smallStyle = new Label.LabelStyle();
@@ -89,31 +74,14 @@ public class GameOverScreen implements Screen {
         Label.LabelStyle largeStyle = new Label.LabelStyle();
         largeStyle.font = fontLarge;
 
-        Label lbScore = new Label("SCORE", smallStyle);
-        Label lbScoreValue = new Label("" + score, smallStyle);
-        Label lbBest = new Label("BEST", smallStyle);
-        Label lbBestValue = new Label("5", smallStyle);
-        Label lbGameover = new Label("GAME OVER", mediumStyle);
-
-        Label large = new Label("Large Font", largeStyle);
-
-        Table tablez = new Table();
-        tablez.setFillParent(true);
-        tablez.add(lbGameover).colspan(2).spaceBottom(20).row();
-        tablez.add(lbScore).spaceBottom(10);
-        tablez.add(lbScoreValue).spaceBottom(10);
-        tablez.row();
-        tablez.add(lbBest);
-        tablez.add(lbBestValue);
-        tablez.row();
-//        table.align(Align.center);
-
-        tablez.defaults().size(hud.stage.getWidth(), hud.stage.getHeight() / 6);
-        tablez.setPosition(0, hud.stage.getHeight() / 6);
-
-//        tablez.add(large).row();
-
-        hud.stage.addActor(tablez);
+        Label lbGame = new Label("2CARS", largeStyle);
+        Table table = new Table();
+        table.setFillParent(true);
+        table.add(lbGame).colspan(2).spaceBottom(20).row();
+//        tablez.align(Align.center);
+        table.defaults().size(hud.stage.getWidth(), hud.stage.getHeight() / 6);
+        table.setPosition(0, hud.stage.getHeight() / 5);
+        hud.stage.addActor(table);
     }
 
     @Override
@@ -129,14 +97,14 @@ public class GameOverScreen implements Screen {
         game.batch.begin();
 
         Color c = game.batch.getColor();
-        game.batch.setColor(c.r, c.g, c.b, 0.4f);
-        game.batch.draw(capturedLastFrame, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+        game.batch.setColor(c.r, c.g, c.b, 0.6f);
+        game.batch.draw(capturedFrame, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         game.batch.end();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
 
-    private void btnReplayClick() {
+    private void btnStartClick() {
         PlayScreen p = new PlayScreen(game);
         p.setState(PlayScreen.State.RUN);
         game.setScreen(p);

@@ -2,7 +2,6 @@ package com.mygdx.CARGAME.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -16,14 +15,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -59,7 +56,7 @@ public class PlayScreen implements Screen {
     private Array<RunningObject> listFreeObjects;
     private static Label scoreLabel;
     private static int score;
-    ImageButton pauseButton;
+    private ImageButton pauseButton;
 
     private Array<Body> deadBodies;
     private float deltaTimer;
@@ -67,20 +64,21 @@ public class PlayScreen implements Screen {
     private float generateTimer2;
     private ReentrantLock lock;
     private boolean gameOver = false;
-    private Texture capturedLastFrame;
+    private Texture capturedFrame;
     private static boolean touchOne;
     private static boolean touchTwo;
     private boolean[] touch;
+    private static boolean testChange = true;
 
     public enum State {
+        START,
         PAUSE,
         RUN,
         RESUME,
         STOPPED
     }
 
-    private State state = State.RUN;
-
+    private State state = State.START;
 
     private float renderTime = 0;
 
@@ -159,7 +157,6 @@ public class PlayScreen implements Screen {
                         redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                     }
                 }
-                System.out.println("pause button x: " + btnX + " x': " + x + " x+w: " + (btnX + btnWidth) + " y: " + btnY + "    y': " + y + " y-h:" + (btnY + btnHeight));
 
                 return true;
             }
@@ -308,6 +305,23 @@ public class PlayScreen implements Screen {
     @Override
     public void render(float delta) {
         switch (state) {
+            case START:
+                update(delta);
+                Gdx.gl.glClearColor(0, 0, 0, 1);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                game.batch.setProjectionMatrix(game_cam.combined);
+                game.batch.begin();
+                game.batch.draw(background, 0, 0, game_port.getWorldWidth(), game_port.getWorldHeight());
+                blueCar.draw(game.batch);
+                redCar.draw(game.batch);
+                game.batch.end();
+                game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+//        box2DDebugRenderer.render(world,game_cam.combined);
+                hud.stage.draw();
+                getFrame();
+                game.setScreen(new StartScreen(game, capturedFrame));
+                dispose();
+                break;
             case RUN:
                 update(delta);
 
@@ -331,8 +345,8 @@ public class PlayScreen implements Screen {
                 hud.stage.draw();
                 if (gameOver) {
                     initTouchStatus();//reset touch status
-                    getLastFrame();
-                    game.setScreen(new GameOverScreen(game, capturedLastFrame, score));
+                    getFrame();
+                    game.setScreen(new GameOverScreen(game, capturedFrame, score));
                     dispose();
                 }
                 break;
@@ -347,7 +361,7 @@ public class PlayScreen implements Screen {
 
     }
 
-    private void getLastFrame() {
+    private void getFrame() {
         ScreenshotFactory sf = new ScreenshotFactory();
         Pixmap pixmap = sf.getScreenshot(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         Pixmap pixmap1 = new Pixmap(game_port.getScreenWidth(), game_port.getScreenHeight(), pixmap.getFormat());
@@ -355,7 +369,7 @@ public class PlayScreen implements Screen {
                 0, 0, pixmap.getWidth(), pixmap.getHeight(),
                 0, 0, pixmap1.getWidth(), pixmap1.getHeight()
         );
-        capturedLastFrame = new Texture(pixmap1);
+        capturedFrame = new Texture(pixmap1);
     }
 
     @Override
@@ -373,11 +387,13 @@ public class PlayScreen implements Screen {
 
     @Override
     public void pause() {
+        this.state = State.PAUSE;
 
     }
 
     @Override
     public void resume() {
+        this.state = State.RESUME;
 
     }
 
@@ -397,7 +413,7 @@ public class PlayScreen implements Screen {
         Label.LabelStyle smallStyle = new Label.LabelStyle();
         smallStyle.font = fontSmall;
 
-        scoreLabel = new Label(String.format("%d", hud.getScore()), new Label.LabelStyle(fontSmall, Color.WHITE));
+        scoreLabel = new Label(String.format("%d", hud.score), new Label.LabelStyle(fontSmall, Color.WHITE));
         tableScore.add(scoreLabel).padRight(10).padTop(5);
         stage.addActor(tableScore);
     }
@@ -420,16 +436,30 @@ public class PlayScreen implements Screen {
             }
         });
         pauseButton.setPosition(10, hud.stage.getHeight() - pauseButton.getHeight() - 10);
-        hud.stage.addActor(pauseButton);
+        stage.addActor(pauseButton);
     }
 
     private void btnPauseClick() {
-        state = State.PAUSE;
+        if (testChange) {
+//          state = State.PAUSE;
+            Gdx.graphics.setContinuousRendering(false);
+        } else {
+//            state = State.RESUME;
+            Gdx.graphics.setContinuousRendering(true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Gdx.graphics.requestRendering();
+                }
+            }).start();
+        }
+        testChange = !testChange;
+
     }
 
 
     private void updateScore() {
-        score = hud.getScore();
+        score = hud.score;
         scoreLabel.setText(String.format("%d", score));
     }
 
@@ -443,5 +473,13 @@ public class PlayScreen implements Screen {
 
     public static void setScore(int score) {
         PlayScreen.score = score;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 }
