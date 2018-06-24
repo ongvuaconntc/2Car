@@ -57,7 +57,7 @@ public class Car extends Sprite {
 
         defineCar(blue);
         carGoStraight=new TextureRegion(getTexture(),indexX,0,CarGame.CAR_SIZE,CarGame.CAR_SIZE);
-        setBounds(0,0,CarGame.CAR_SIZE/CarGame.PPM,CarGame.CAR_SIZE/CarGame.PPM);
+        setBounds(0,0,CarGame.CAR_SIZE*1.1f/CarGame.PPM,CarGame.CAR_SIZE*1.1f/CarGame.PPM);
         setRegion(carGoStraight);
 
 

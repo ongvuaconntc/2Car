@@ -38,7 +38,7 @@ public class CircleObject extends RunningObject {
         this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
         else
             this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        setBounds(0,0,CarGame.OBJECT_SIZE/CarGame.PPM,CarGame.OBJECT_SIZE/CarGame.PPM);
+        setBounds(0,0,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM);
         setRegion(this.texture);
     }
 

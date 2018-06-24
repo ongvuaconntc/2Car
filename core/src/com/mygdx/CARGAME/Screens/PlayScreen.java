@@ -68,8 +68,9 @@ public class PlayScreen implements Screen {
     private static boolean touchOne;
     private static boolean touchTwo;
     private boolean[] touch;
-    private static boolean testChange = true;
-
+    public static boolean runningState = true;
+    private int lastScore=0;
+    private int increaseBase=1;
     public enum State {
         START,
         PAUSE,
@@ -77,6 +78,8 @@ public class PlayScreen implements Screen {
         RESUME,
         STOPPED
     }
+
+    private boolean renderStatus=true;
 
     private State state = State.START;
 
@@ -125,7 +128,6 @@ public class PlayScreen implements Screen {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-                // touch[pointer] = true;
                 float x = Gdx.input.getX(pointer);
                 float y = Gdx.input.getY(pointer);
                 Vector3 mousePos = new Vector3(x, y, 0);
@@ -140,6 +142,7 @@ public class PlayScreen implements Screen {
                     btnPauseClick();
                     return true;
                 }
+                if (!runningState) return true;
                 if (x < CarGame.WIDTH / 2 / CarGame.PPM) {
                     if (touchOne) {
                         touchOne = false;
@@ -163,6 +166,16 @@ public class PlayScreen implements Screen {
         });
         initDrawScore(hud.stage);
         initDrawPauseBtn(hud.stage);
+        runningState=true;
+    }
+    public void reset(){
+        deltaTimer = 0.6f;
+        generateTimer = 0;
+        generateTimer2 = 0;
+        lastScore=0;
+        runningState=true;
+        game.OBJECT_VELOCITY=6;
+        increaseBase=1;
     }
 
     public TextureAtlas getAtlas() {
@@ -220,8 +233,15 @@ public class PlayScreen implements Screen {
             }
         return false;
     }
+    private void updateVelocity(){
+        for (RunningObject ob:listObjects){
+            if (ob.fixture.getFilterData().categoryBits != CarGame.DESTROYED_BIT)
+            ob.body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
+        }
+    }
 
     private void generateObjects(float delta) {
+        if (!runningState) return;
         if (generateTimer > 0.7f) {
             generateTimer = 0;
         }
@@ -281,9 +301,15 @@ public class PlayScreen implements Screen {
     }
 
     private void update(float delta) {
+        if (runningState)
+        world.step(1 / 60f, 6, 2);
+        else {
+            world.step(1 / 100000f, 6, 2);
+            delta=delta/100000f;
+        }
         generateObjects(delta);
         updateScore();
-        world.step(1 / 60f, 6, 2);
+
 
 
         blueCar.update(delta);
@@ -304,6 +330,13 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (lastScore==Hud.getScore()-increaseBase){
+            CarGame.OBJECT_VELOCITY+=1;
+            lastScore=Hud.getScore();
+            if (increaseBase<30)
+            increaseBase=increaseBase*2;
+            updateVelocity();
+        }
         switch (state) {
             case START:
                 update(delta);
@@ -440,20 +473,31 @@ public class PlayScreen implements Screen {
     }
 
     private void btnPauseClick() {
-        if (testChange) {
-//          state = State.PAUSE;
+        System.out.println("btnPauseClick");
+        if (runningState) {
+
             Gdx.graphics.setContinuousRendering(false);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Gdx.graphics.requestRendering();
+                    System.out.println("set Continuous Rendering false in thread");
+                }
+            }).start();
+            System.out.println("set Continuous Rendering false");
         } else {
-//            state = State.RESUME;
+
             Gdx.graphics.setContinuousRendering(true);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Gdx.graphics.requestRendering();
+                    System.out.println("set Continuous Rendering true in thread");
                 }
             }).start();
+            System.out.println("set Continuous Rendering true");
         }
-        testChange = !testChange;
+        runningState = !runningState;
 
     }
 

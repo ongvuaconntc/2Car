@@ -139,6 +139,7 @@ public class GameOverScreen implements Screen {
     private void btnReplayClick() {
         PlayScreen p = new PlayScreen(game);
         p.setState(PlayScreen.State.RUN);
+        p.reset();
         game.setScreen(p);
         dispose();
     }
