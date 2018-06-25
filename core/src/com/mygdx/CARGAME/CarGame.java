@@ -2,6 +2,10 @@ package com.mygdx.CARGAME;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.mygdx.CARGAME.Screens.PlayScreen;
 
 public class CarGame extends Game {
@@ -22,14 +26,25 @@ public class CarGame extends Game {
     public static final short GROUND_BIT=8;
 	public static final short DESTROYED_BIT=16;
 
+	public static final boolean ENABLE_3D=true;
 
+	//3d variables
+	public ModelBatch modelBatch;
+	public Environment environment;
 
 
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		if (ENABLE_3D) {
+			modelBatch = new ModelBatch();
+			environment = new Environment();
+			environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+			environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+		}
 		setScreen(new PlayScreen(this));
+
 	}
 
 	@Override
@@ -41,5 +56,7 @@ public class CarGame extends Game {
 	public void dispose () {
 		super.dispose();
 		batch.dispose();
+		if (ENABLE_3D)
+		modelBatch.dispose();
 	}
 }

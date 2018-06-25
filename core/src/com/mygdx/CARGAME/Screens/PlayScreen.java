@@ -7,11 +7,19 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -90,6 +98,17 @@ public class PlayScreen implements Screen {
     private Car blueCar;
     private Car redCar;
 
+    //3d variables
+    public PerspectiveCamera cam_3d;
+    public ModelBuilder modelBuilder;
+    public Model model;
+    public Model modelred;
+
+    public ModelInstance instance_blue;
+    public ModelInstance instance_red;
+
+    private Array<ModelInstance> list3DObjects;
+
     public PlayScreen(CarGame carGame) {
         touch = new boolean[20];
         atlas = new TextureAtlas("Car.pack");
@@ -167,6 +186,8 @@ public class PlayScreen implements Screen {
         initDrawScore(hud.stage);
         initDrawPauseBtn(hud.stage);
         runningState=true;
+
+        if (CarGame.ENABLE_3D) init3D();
     }
     public void reset(){
         deltaTimer = 0.6f;
@@ -176,6 +197,64 @@ public class PlayScreen implements Screen {
         runningState=true;
         game.OBJECT_VELOCITY=6;
         increaseBase=1;
+    }
+
+    public void init3D(){
+
+        cam_3d = new PerspectiveCamera(100, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -CarGame.HEIGHT/CarGame.PPM/3f, 5f);
+        cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0.5f);
+        cam_3d.near = 1f;
+        cam_3d.far = 100f;
+        cam_3d.update();
+
+        modelBuilder = new ModelBuilder();
+        model = modelBuilder.createBox(CarGame.OBJECT_SIZE/CarGame.PPM, 2f, 1f,
+                new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        instance_blue = new ModelInstance(model);
+        instance_blue.transform.translate(blueCar.b2body.getPosition().x,blueCar.b2body.getPosition().y,0f);
+
+        modelred = modelBuilder.createBox(CarGame.OBJECT_SIZE/CarGame.PPM, 2f, 1f,
+                new Material(ColorAttribute.createDiffuse(Color.RED)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        instance_red = new ModelInstance(modelred);
+        instance_red.transform.translate(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
+
+        list3DObjects=new Array<>();
+
+    }
+
+    public void render3D(){
+        list3DObjects.clear();
+        instance_blue.transform.trn(blueCar.b2body.getLinearVelocity().x/CarGame.PPM/2f,0f,0f);
+        instance_red.transform.trn(redCar.b2body.getLinearVelocity().x/CarGame.PPM/2f,0f,0f);
+
+//        for (RunningObject ob:listObjects){
+//            if (ob.fixture.getFilterData().categoryBits != CarGame.DESTROYED_BIT)
+//            {
+//                Model model = modelBuilder.createSphere(1f, 1f, 1f, 20, 20,
+//                        new Material(),
+//                        VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+//                ModelInstance instance = new ModelInstance(model);
+//                list3DObjects.add(instance);
+//              }
+//        }
+
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        game.modelBatch.begin(cam_3d);
+        game.modelBatch.render(instance_blue,game.environment);
+        game.modelBatch.render(instance_red,game.environment);
+//        for (ModelInstance modelInstance:list3DObjects)
+//            game.modelBatch.render(modelInstance,game.environment);
+        game.modelBatch.end();
+    }
+
+    public void dispose3D(){
+        model.dispose();
+        modelred.dispose();
     }
 
     public TextureAtlas getAtlas() {
@@ -330,6 +409,9 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (CarGame.ENABLE_3D)
+            render3D();
+
         if (lastScore==Hud.getScore()-increaseBase){
             CarGame.OBJECT_VELOCITY+=1;
             lastScore=Hud.getScore();
@@ -340,10 +422,13 @@ public class PlayScreen implements Screen {
         switch (state) {
             case START:
                 update(delta);
-                Gdx.gl.glClearColor(0, 0, 0, 1);
-                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                if (!CarGame.ENABLE_3D) {
+                       Gdx.gl.glClearColor(0, 0, 0, 1);
+                       Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                }
                 game.batch.setProjectionMatrix(game_cam.combined);
                 game.batch.begin();
+                if (!CarGame.ENABLE_3D)
                 game.batch.draw(background, 0, 0, game_port.getWorldWidth(), game_port.getWorldHeight());
                 blueCar.draw(game.batch);
                 redCar.draw(game.batch);
@@ -357,13 +442,13 @@ public class PlayScreen implements Screen {
                 break;
             case RUN:
                 update(delta);
-
-                Gdx.gl.glClearColor(0, 0, 0, 1);
-                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+                if (!CarGame.ENABLE_3D) {
+                    Gdx.gl.glClearColor(0, 0, 0, 1);
+                    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+                }
                 game.batch.setProjectionMatrix(game_cam.combined);
                 game.batch.begin();
-
+                if (!CarGame.ENABLE_3D)
                 game.batch.draw(background, 0, 0, game_port.getWorldWidth(), game_port.getWorldHeight());
                 blueCar.draw(game.batch);
                 redCar.draw(game.batch);
@@ -392,6 +477,7 @@ public class PlayScreen implements Screen {
         }
 
 
+
     }
 
     private void getFrame() {
@@ -411,6 +497,8 @@ public class PlayScreen implements Screen {
         background.dispose();
         box2DDebugRenderer.dispose();
         world.dispose();
+        if (CarGame.ENABLE_3D)
+        dispose3D();
     }
 
     @Override
