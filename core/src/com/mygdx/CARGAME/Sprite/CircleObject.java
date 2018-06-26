@@ -1,8 +1,13 @@
 package com.mygdx.CARGAME.Sprite;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Circle;
@@ -40,6 +45,18 @@ public class CircleObject extends RunningObject {
             this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
         setBounds(0,0,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM);
         setRegion(this.texture);
+
+        Color color;
+        if (left<2) color=Color.BLUE;
+        else color=Color.RED;
+        if (CarGame.ENABLE_3D) {
+            model = screen.modelBuilder.createSphere(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, 20, 20,
+                    new Material(ColorAttribute.createDiffuse(color)),
+                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+            instance = new ModelInstance(model);
+            instance.transform.setToTranslation(this.body.getPosition().x,this.body.getPosition().y,0f);
+      //      instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
 
     public void onHeadHit(){
@@ -54,14 +71,27 @@ public class CircleObject extends RunningObject {
       //  body.resetMassData();
        // body.setActive(true);
         switch (left){
-            case 0: body.setTransform(CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 1:  body.setTransform(3*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 2:  body.setTransform(5*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 3:  body.setTransform(7*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
+            case 0: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+
+                body.setTransform(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }break;
+            case 1: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
+            case 2: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
+            case 3: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
         }
 
         body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
@@ -74,5 +104,13 @@ public class CircleObject extends RunningObject {
         filter.maskBits=CarGame.CAR_BIT;
         fixture.setFilterData(filter);
         setRegion(this.texture);
+        if (CarGame.ENABLE_3D){
+            Color color;
+            if (left<2) color=Color.BLUE;
+            else color=Color.RED;
+
+            instance.materials.get(0).set(ColorAttribute.createDiffuse(color));
+       //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
 }

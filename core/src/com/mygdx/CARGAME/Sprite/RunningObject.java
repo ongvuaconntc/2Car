@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -23,6 +25,8 @@ public abstract class RunningObject extends Sprite {
     protected PlayScreen screen;
     public String name;
     public Filter filter;
+    public ModelInstance instance;
+    public Model model;
 
     public RunningObject(PlayScreen screen, World world,int left,String name){
         super(screen.getAtlasObjects().findRegion(name));
@@ -60,13 +64,21 @@ public abstract class RunningObject extends Sprite {
         body.setTransform(-50,-50, body.getAngle());
       //  body.setActive(false);
         setPosition(-50,-50);
+
+        if (CarGame.ENABLE_3D) {
+            instance.transform.setToTranslation(-50, -50, 0f);
+            //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
     public void update(float delta){
         if (body.getPosition().y<0){
             setFree();
         }
-        else
-        setPosition(body.getPosition().x-getWidth()/2,body.getPosition().y-getHeight()/2);
+        else {
+            setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
+       //     if (CarGame.ENABLE_3D)
+        //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
     public abstract void onHeadHit();
     public abstract void reset(int left);

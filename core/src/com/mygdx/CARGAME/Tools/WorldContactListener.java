@@ -26,6 +26,9 @@ public class WorldContactListener implements ContactListener {
             //    System.out.println("Collision\n");
                 ((RunningObject) object.getUserData()).onHeadHit();
             }
+            else{
+                System.out.println("wall hit");
+            }
         }
 
     }

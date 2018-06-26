@@ -1,8 +1,13 @@
 package com.mygdx.CARGAME.Sprite;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -36,6 +41,18 @@ public class RectangleObject extends RunningObject {
         setBounds(0,0,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM);
 
         setRegion(this.texture);
+
+        Color color;
+        if (left<2) color=Color.BLUE;
+        else color=Color.RED;
+        if (CarGame.ENABLE_3D) {
+            model = screen. modelBuilder.createBox(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM,
+                    new Material(ColorAttribute.createDiffuse(color)),
+                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+            instance = new ModelInstance(model);
+            instance.transform.setToTranslation(this.body.getPosition().x,this.body.getPosition().y,0f);
+     //       instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
 
 
@@ -49,14 +66,27 @@ public class RectangleObject extends RunningObject {
     public void reset(int left) {
         //body.setActive(true);
         switch (left){
-            case 0: body.setTransform(CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 1:  body.setTransform(3*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 2:  body.setTransform(5*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
-            case 3:  body.setTransform(7*CarGame.WIDTH/8/CarGame.PPM,(CarGame.HEIGHT+10)/CarGame.PPM,body.getAngle());
-                break;
+            case 0: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+
+                body.setTransform(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            } break;
+            case 1: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
+            case 2: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
+            case 3: {
+                if (CarGame.ENABLE_3D)
+                    instance.transform.setToTranslation(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
+                body.setTransform(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
+            }   break;
         }
         if (left<2)
             this.texture=new TextureRegion(getTexture(),35,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
@@ -69,5 +99,15 @@ public class RectangleObject extends RunningObject {
         filter.maskBits=CarGame.CAR_BIT;
         fixture.setFilterData(filter);
         setRegion(this.texture);
+
+        if (CarGame.ENABLE_3D){
+            Color color;
+            if (left<2) color=Color.BLUE;
+            else color=Color.RED;
+
+            instance.materials.get(0).set(ColorAttribute.createDiffuse(color));
+
+         //   instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+        }
     }
 }
