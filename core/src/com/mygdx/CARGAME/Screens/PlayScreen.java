@@ -227,7 +227,7 @@ public class PlayScreen implements Screen {
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
         // Now load the model by name
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
-        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/car.g3db", Files.FileType.Internal));
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/car2.g3db", Files.FileType.Internal));
         model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_blue = new ModelInstance(model);
@@ -245,7 +245,7 @@ public class PlayScreen implements Screen {
         G3dModelLoader modelLoader2 = new G3dModelLoader(jsonReader2);
         // Now load the model by name
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
-        modelred = modelLoader2.loadModel(Gdx.files.getFileHandle("object3d/car.g3db", Files.FileType.Internal));
+        modelred = modelLoader2.loadModel(Gdx.files.getFileHandle("object3d/car2.g3db", Files.FileType.Internal));
         modelred.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_red = new ModelInstance(modelred);
