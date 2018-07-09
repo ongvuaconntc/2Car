@@ -1,5 +1,6 @@
 package com.mygdx.CARGAME.Screens;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -37,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.UBJsonReader;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.CARGAME.CarGame;
@@ -212,15 +215,39 @@ public class PlayScreen implements Screen {
         cam_3d.update();
 
         modelBuilder = new ModelBuilder();
-        model = modelBuilder.createBox(0.5f, 0.5f, 0.5f,
-                new Material(ColorAttribute.createDiffuse(Color.BLUE)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//        model = modelBuilder.createBox(0.5f, 0.5f, 2f,
+//                new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+//                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//        instance_blue = new ModelInstance(model);
+//        instance_blue.transform.setToTranslation(blueCar.b2body.getPosition().x,blueCar.b2body.getPosition().y,0f);
+
+        // Model loader needs a binary json reader to decode
+        UBJsonReader jsonReader = new UBJsonReader();
+        // Create a model loader passing in our json reader
+        G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
+        // Now load the model by name
+        // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/car.g3db", Files.FileType.Internal));
+        model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
+        // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_blue = new ModelInstance(model);
         instance_blue.transform.setToTranslation(blueCar.b2body.getPosition().x,blueCar.b2body.getPosition().y,0f);
 
-        modelred = modelBuilder.createBox(0.5f, 0.5f, 0.5f,
-                new Material(ColorAttribute.createDiffuse(Color.RED)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//        modelred = modelBuilder.createBox(0.5f, 0.5f, 0.5f,
+//                new Material(ColorAttribute.createDiffuse(Color.RED)),
+//                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//        instance_red = new ModelInstance(modelred);
+//        instance_red.transform.setToTranslation(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
+
+        // Model loader needs a binary json reader to decode
+        UBJsonReader jsonReader2 = new UBJsonReader();
+        // Create a model loader passing in our json reader
+        G3dModelLoader modelLoader2 = new G3dModelLoader(jsonReader2);
+        // Now load the model by name
+        // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
+        modelred = modelLoader2.loadModel(Gdx.files.getFileHandle("object3d/car.g3db", Files.FileType.Internal));
+        modelred.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
+        // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_red = new ModelInstance(modelred);
         instance_red.transform.setToTranslation(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
 
@@ -385,9 +412,8 @@ public class PlayScreen implements Screen {
         }
 //        generateTimer+=delta;
 //        generateTimer2+=delta;
-
-        generateTimer += 0.015;
-        generateTimer2 += 0.015;
+        generateTimer += 0.02;
+        generateTimer2 += 0.02;
     }
 
     private void update(float delta) {
