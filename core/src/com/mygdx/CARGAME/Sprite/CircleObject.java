@@ -47,8 +47,8 @@ public class CircleObject extends RunningObject {
         setRegion(this.texture);
 
         Color color;
-        if (left<2) color=Color.BLUE;
-        else color=Color.RED;
+        if (left<2) color=Color.valueOf("#42c5f4");
+        else color=Color.valueOf("#fc4e4e");
         if (CarGame.ENABLE_3D) {
             model = screen.modelBuilder.createSphere(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, 20, 20,
                     new Material(ColorAttribute.createDiffuse(color)),
@@ -106,8 +106,8 @@ public class CircleObject extends RunningObject {
         setRegion(this.texture);
         if (CarGame.ENABLE_3D){
             Color color;
-            if (left<2) color=Color.BLUE;
-            else color=Color.RED;
+            if (left<2) color=Color.valueOf("#42c5f4");
+            else color=Color.valueOf("#fc4e4e");
 
             instance.materials.get(0).set(ColorAttribute.createDiffuse(color));
        //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);

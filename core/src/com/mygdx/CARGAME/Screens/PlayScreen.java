@@ -65,6 +65,7 @@ public class PlayScreen implements Screen {
     private TextureAtlas atlas_RED;
     private TextureAtlas atlasObjects;
     private Texture background;
+    private Texture background3d;
     private Array<RunningObject> listObjects;
     private Array<RunningObject> listFreeObjects;
     private static Label scoreLabel;
@@ -137,6 +138,7 @@ public class PlayScreen implements Screen {
 
         hud = new Hud(game.batch);
         background = new Texture("background.jpg");
+        background3d = new Texture("3d_background.jpg");
         //  System.out.println("WIDTH:"+background.getWidth()+ " HEIGHT:"+background.getHeight());
 
         world = new World(new Vector2(0, 0), true);
@@ -208,10 +210,10 @@ public class PlayScreen implements Screen {
     public void init3D(){
 
         cam_3d = new PerspectiveCamera(100, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -1f, 5f);
+        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 3.5f);
         cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0f);
-        cam_3d.near = 1f;
-        cam_3d.far = 100f;
+        cam_3d.near = 0.5f;
+        cam_3d.far = 1000f;
         cam_3d.update();
 
         modelBuilder = new ModelBuilder();
@@ -256,7 +258,7 @@ public class PlayScreen implements Screen {
         Texture texture = new Texture("background1.jpg");
         Material material = new Material(TextureAttribute.createDiffuse(texture), ColorAttribute.createSpecular(1, 1, 1, 1), FloatAttribute.createShininess(8f));
         long attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
-        wall = modelBuilder.createBox(CarGame.WIDTH/CarGame.PPM, 3*CarGame.HEIGHT/CarGame.PPM, 0.1f, material, attributes);
+        wall = modelBuilder.createBox(CarGame.WIDTH/CarGame.PPM, 20*CarGame.HEIGHT/CarGame.PPM, 0.1f, material, attributes);
         instance_wall=new ModelInstance(wall);
         instance_wall.transform.setToTranslation(CarGame.WIDTH/CarGame.PPM/2f,7f,-1f);
 
@@ -272,6 +274,10 @@ public class PlayScreen implements Screen {
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        game.batch.setProjectionMatrix(game_cam.combined);
+        game.batch.begin();
+        game.batch.draw(background3d, 0, 0, game_port.getWorldWidth(), game_port.getWorldHeight());
+        game.batch.end();
 
         game.modelBatch.begin(cam_3d);
         game.modelBatch.render(instance_wall,game.environment);
@@ -446,8 +452,6 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (CarGame.ENABLE_3D)
-            render3D();
 
         if (lastScore==Hud.getScore()-increaseBase){
             CarGame.OBJECT_VELOCITY+=1;
@@ -472,6 +476,7 @@ public class PlayScreen implements Screen {
                     redCar.draw(game.batch);
                     game.batch.end();
                 }
+                else render3D();
 
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -500,6 +505,7 @@ public class PlayScreen implements Screen {
 
                     game.batch.end();
                 }
+                else render3D();
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 //        box2DDebugRenderer.render(world,game_cam.combined);
