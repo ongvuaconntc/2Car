@@ -23,7 +23,7 @@ import com.mygdx.CARGAME.CarGame;
 import com.mygdx.CARGAME.Tools.SmartFontGenerator;
 import com.mygdx.CARGAME.scenes.Hud;
 
-public class StartScreen implements Screen {
+public class MenuScreen implements Screen {
     private Hud hud;
     private Viewport viewport;
     private Texture capturedFrame;
@@ -31,9 +31,9 @@ public class StartScreen implements Screen {
     private CarGame game;
     private OrthographicCamera game_cam;
 
-    public StartScreen(CarGame game, Texture frame) {
+    public MenuScreen(CarGame game, Texture frame) {
         this.game = game;
-        this.capturedFrame = frame;
+        this.capturedFrame = (frame == null) ? new Texture("menu-bg.jpg") : frame;
         game_cam = new OrthographicCamera();
         viewport = new StretchViewport((game.WIDTH / game.PPM), (game.HEIGHT / game.PPM), game_cam);
         game_cam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
@@ -41,7 +41,7 @@ public class StartScreen implements Screen {
         hud = new Hud(game.batch);
         Gdx.input.setInputProcessor(hud.stage);
 
-        Texture playTexture = new Texture("play.png");
+        Texture playTexture = new Texture("2d.png");
         Drawable drawable = new TextureRegionDrawable(new TextureRegion(playTexture));
         ImageButton playButton = new ImageButton(drawable);
         playButton.setSize(game.WIDTH / 3, game.WIDTH / 3);
@@ -58,7 +58,27 @@ public class StartScreen implements Screen {
             }
         });
         playButton.setPosition(hud.stage.getWidth() / 2 - playButton.getWidth() / 2, hud.stage.getHeight() / 2 - 4 * playButton.getHeight() / 5);
+
+        Texture playTexture2 = new Texture("3d.png");
+        Drawable drawable2 = new TextureRegionDrawable(new TextureRegion(playTexture2));
+        ImageButton playButton2 = new ImageButton(drawable2);
+        playButton2.setSize(game.WIDTH / 3, game.WIDTH / 3);
+        playButton2.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                btnStartClick2();
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down");
+                return true;
+            }
+        });
+        playButton2.setPosition(hud.stage.getWidth() / 2 - playButton2.getWidth() / 2, hud.stage.getHeight() / 1.5f - 4 * playButton2.getHeight() / 5);
+
         hud.stage.addActor(playButton);
+        hud.stage.addActor(playButton2);
 
         SmartFontGenerator fontGen = new SmartFontGenerator();
         FileHandle exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
@@ -106,7 +126,18 @@ public class StartScreen implements Screen {
 
     private void btnStartClick() {
         PlayScreen p = new PlayScreen(game);
+        CarGame.ENABLE_3D = false;
         p.setState(PlayScreen.State.RUN);
+        p.reset();
+        game.setScreen(p);
+        dispose();
+    }
+
+    private void btnStartClick2() {
+        PlayScreen p = new PlayScreen(game);
+        CarGame.ENABLE_3D = true;
+        p.setState(PlayScreen.State.RUN);
+        p.reset();
         game.setScreen(p);
         dispose();
     }
@@ -135,5 +166,4 @@ public class StartScreen implements Screen {
     public void dispose() {
 
     }
-
 }

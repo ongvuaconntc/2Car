@@ -50,6 +50,7 @@ public class CircleObject extends RunningObject {
         if (left<2) color=Color.valueOf("#42c5f4");
         else color=Color.valueOf("#fc4e4e");
         if (CarGame.ENABLE_3D) {
+            System.out.println("screen = null: " + (screen == null));
             model = screen.modelBuilder.createSphere(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, 20, 20,
                     new Material(ColorAttribute.createDiffuse(color)),
                     VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);

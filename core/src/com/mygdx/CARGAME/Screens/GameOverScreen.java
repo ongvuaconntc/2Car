@@ -1,6 +1,7 @@
 package com.mygdx.CARGAME.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -27,12 +28,15 @@ public class GameOverScreen implements Screen {
     private Hud hud;
     private Viewport viewport;
     private Texture capturedLastFrame;
+    private static int highScore;
+    private int score;
 
     private CarGame game;
     private OrthographicCamera game_cam;
 
     public GameOverScreen(CarGame game, Texture lastFrame, int score) {
         this.game = game;
+        this.score = score;
         this.capturedLastFrame = lastFrame;
         game_cam = new OrthographicCamera();
         viewport = new StretchViewport((game.WIDTH / game.PPM), (game.HEIGHT / game.PPM), game_cam);
@@ -41,6 +45,14 @@ public class GameOverScreen implements Screen {
         hud = new Hud(game.batch);
         Gdx.input.setInputProcessor(hud.stage);
 
+        Preferences prefs = Gdx.app.getPreferences("ScorePreferences");
+        highScore = prefs.getInteger("score", 0);
+
+        if (score > highScore) {
+            highScore = score;
+            prefs.putInteger("score", highScore);
+            prefs.flush();
+        }
         BitmapFont f = new BitmapFont();
         f.getData().setScale(2f);
         Label.LabelStyle font = new Label.LabelStyle(f, Color.WHITE);
@@ -75,6 +87,26 @@ public class GameOverScreen implements Screen {
         replayButton.setPosition(hud.stage.getWidth() / 2 - replayButton.getWidth() / 2, hud.stage.getHeight() / 2 - 4 * replayButton.getHeight() / 3);
         hud.stage.addActor(replayButton);
 
+        Texture backMenuTexture = new Texture("backmenu.png");
+        Drawable drawable2 = new TextureRegionDrawable(new TextureRegion(backMenuTexture));
+        ImageButton backMenuButton = new ImageButton(drawable2);
+        backMenuButton.setSize(game.WIDTH / 3, game.WIDTH / 3);
+        backMenuButton.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                backMenuClick();
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down");
+                return true;
+            }
+        });
+        backMenuButton.setPosition(hud.stage.getWidth() / 2 - backMenuButton.getWidth() / 2, hud.stage.getHeight() / 1.5f - 4 * backMenuButton.getHeight() / 3);
+        hud.stage.addActor(backMenuButton);
+
+
         SmartFontGenerator fontGen = new SmartFontGenerator();
         FileHandle exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
         BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 30);
@@ -92,7 +124,7 @@ public class GameOverScreen implements Screen {
         Label lbScore = new Label("SCORE", smallStyle);
         Label lbScoreValue = new Label("" + score, smallStyle);
         Label lbBest = new Label("BEST", smallStyle);
-        Label lbBestValue = new Label("5", smallStyle);
+        Label lbBestValue = new Label("" + highScore, smallStyle);
         Label lbGameover = new Label("GAME OVER", mediumStyle);
 
         Label large = new Label("Large Font", largeStyle);
@@ -144,6 +176,12 @@ public class GameOverScreen implements Screen {
         dispose();
     }
 
+    private void backMenuClick() {
+        MenuScreen menuScreen = new MenuScreen(game, null);
+        game.setScreen(menuScreen);
+        dispose();
+    }
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
@@ -166,7 +204,12 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        Preferences prefs = Gdx.app.getPreferences("ScorePreferences");
+        if (score > highScore) {
+            highScore = score;
+            prefs.putInteger("score", highScore);
+            prefs.flush();
+        }
     }
 
 }

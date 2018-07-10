@@ -195,7 +195,12 @@ public class PlayScreen implements Screen {
         initDrawPauseBtn(hud.stage);
         runningState=true;
 
+        long tStart = System.currentTimeMillis();
         if (CarGame.ENABLE_3D) init3D();
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
+        System.out.println("elapsed second time: " + elapsedSeconds);
     }
     public void reset(){
         deltaTimer = 0.6f;

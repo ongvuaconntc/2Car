@@ -46,7 +46,8 @@ public class RectangleObject extends RunningObject {
         if (left<2) color=Color.valueOf("#42c5f4");
         else color=Color.valueOf("#fc4e4e");
         if (CarGame.ENABLE_3D) {
-            model = screen. modelBuilder.createBox(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM,
+            System.out.println("screen = null: " + (screen == null));
+            model = screen.modelBuilder.createBox(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM,
                     new Material(ColorAttribute.createDiffuse(color)),
                     VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
             instance = new ModelInstance(model);

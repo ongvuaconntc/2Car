@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.mygdx.CARGAME.Screens.MenuScreen;
 import com.mygdx.CARGAME.Screens.PlayScreen;
 
 public class CarGame extends Game {
@@ -26,7 +27,7 @@ public class CarGame extends Game {
     public static final short GROUND_BIT=8;
 	public static final short DESTROYED_BIT=16;
 
-	public static final boolean ENABLE_3D=true;
+	public static boolean ENABLE_3D=true;
 
 	//3d variables
 	public ModelBatch modelBatch;
@@ -43,7 +44,7 @@ public class CarGame extends Game {
 			environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 0.5f));
 			environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, 0f, -1f));
 		}
-		setScreen(new PlayScreen(this));
+		setScreen(new MenuScreen(this, null));
 
 	}
 
