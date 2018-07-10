@@ -125,8 +125,9 @@ public class MenuScreen implements Screen {
     }
 
     private void btnStartClick() {
-        PlayScreen p = new PlayScreen(game);
         CarGame.ENABLE_3D = false;
+        PlayScreen p = new PlayScreen(game);
+
         p.setState(PlayScreen.State.RUN);
         p.reset();
         game.setScreen(p);
@@ -134,8 +135,9 @@ public class MenuScreen implements Screen {
     }
 
     private void btnStartClick2() {
-        PlayScreen p = new PlayScreen(game);
         CarGame.ENABLE_3D = true;
+        PlayScreen p = new PlayScreen(game);
+
         p.setState(PlayScreen.State.RUN);
         p.reset();
         game.setScreen(p);

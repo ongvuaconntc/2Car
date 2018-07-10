@@ -213,7 +213,7 @@ public class PlayScreen implements Screen {
     }
 
     public void init3D(){
-
+        System.out.println("init 3d");
         cam_3d = new PerspectiveCamera(100, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 3.5f);
         cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0f);
