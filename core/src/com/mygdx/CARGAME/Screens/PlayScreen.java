@@ -23,6 +23,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.model.Animation;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -114,6 +116,8 @@ public class PlayScreen implements Screen {
     public ModelInstance instance_blue;
     public ModelInstance instance_red;
     public ModelInstance instance_wall;
+    private AnimationController controller;
+    private AnimationController controllerred;
 
 
     public PlayScreen(CarGame carGame) {
@@ -151,6 +155,13 @@ public class PlayScreen implements Screen {
         world.setContactListener(new WorldContactListener());
         initTouchStatus();
 
+        long tStart = System.currentTimeMillis();
+        if (CarGame.ENABLE_3D) init3D();
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
+        System.out.println("elapsed second time: " + elapsedSeconds);
+
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -174,17 +185,34 @@ public class PlayScreen implements Screen {
                     if (touchOne) {
                         touchOne = false;
                         blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        if (runningState) {
+                            controller.current = null;
+                            controller.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
+                        }
                     } else {
                         blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        if (runningState) {
+                            controller.current = null;
+                            controller.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
+                        }
                         touchOne = true;
                     }
-                } else {
+                } else
+                if (x > CarGame.WIDTH / 2 / CarGame.PPM){
                     if (touchTwo) {
                         touchTwo = false;
                         redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
+                        if (runningState) {
+                            controllerred.current = null;
+                            controllerred.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
+                        }
                     } else {
                         touchTwo = true;
                         redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
+                        if (runningState) {
+                            controllerred.current = null;
+                            controllerred.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
+                        }
                     }
                 }
 
@@ -195,12 +223,7 @@ public class PlayScreen implements Screen {
         initDrawPauseBtn(hud.stage);
         runningState=true;
 
-        long tStart = System.currentTimeMillis();
-        if (CarGame.ENABLE_3D) init3D();
-        long tEnd = System.currentTimeMillis();
-        long tDelta = tEnd - tStart;
-        double elapsedSeconds = tDelta / 1000.0;
-        System.out.println("elapsed second time: " + elapsedSeconds);
+
     }
     public void reset(){
         deltaTimer = 0.6f;
@@ -215,8 +238,8 @@ public class PlayScreen implements Screen {
     public void init3D(){
         System.out.println("init 3d");
         cam_3d = new PerspectiveCamera(100, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 3.5f);
-        cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0f);
+        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 4f);
+        cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0.5f);
         cam_3d.near = 0.5f;
         cam_3d.far = 1000f;
         cam_3d.update();
@@ -234,11 +257,14 @@ public class PlayScreen implements Screen {
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
         // Now load the model by name
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
-        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/car2.g3db", Files.FileType.Internal));
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample.g3db", Files.FileType.Internal));
         model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_blue = new ModelInstance(model);
         instance_blue.transform.setToTranslation(blueCar.b2body.getPosition().x,blueCar.b2body.getPosition().y,0f);
+        for (Animation animation:instance_blue.animations){
+            System.out.println("ID:"+animation.id);
+        }
 
 //        modelred = modelBuilder.createBox(0.5f, 0.5f, 0.5f,
 //                new Material(ColorAttribute.createDiffuse(Color.RED)),
@@ -247,18 +273,20 @@ public class PlayScreen implements Screen {
 //        instance_red.transform.setToTranslation(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
 
         // Model loader needs a binary json reader to decode
-        UBJsonReader jsonReader2 = new UBJsonReader();
+      //  UBJsonReader jsonReader2 = new UBJsonReader();
         // Create a model loader passing in our json reader
-        G3dModelLoader modelLoader2 = new G3dModelLoader(jsonReader2);
+       // G3dModelLoader modelLoader2 = new G3dModelLoader(jsonReader2);
         // Now load the model by name
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
-        modelred = modelLoader2.loadModel(Gdx.files.getFileHandle("object3d/car2.g3db", Files.FileType.Internal));
+        modelred = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample2.g3db", Files.FileType.Internal));
         modelred.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_red = new ModelInstance(modelred);
         instance_red.transform.setToTranslation(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
 
-
+        for (Animation animation:instance_blue.animations){
+            System.out.println("ID red:"+animation.id);
+        }
         //background
         Texture texture = new Texture("background1.jpg");
         Material material = new Material(TextureAttribute.createDiffuse(texture), ColorAttribute.createSpecular(1, 1, 1, 1), FloatAttribute.createShininess(8f));
@@ -266,6 +294,27 @@ public class PlayScreen implements Screen {
         wall = modelBuilder.createBox(CarGame.WIDTH/CarGame.PPM, 20*CarGame.HEIGHT/CarGame.PPM, 0.1f, material, attributes);
         instance_wall=new ModelInstance(wall);
         instance_wall.transform.setToTranslation(CarGame.WIDTH/CarGame.PPM/2f,7f,-1f);
+
+
+        //load animation
+        controller = new AnimationController(instance_blue);
+        controllerred= new AnimationController(instance_red);
+        controllerred.setAnimation("Scene", 2.2f, -1, 1, 10, null);
+
+        controller.setAnimation("Scene", 2.2f, -1, 1, 10, null);
+
+
+
+//        controller.setAnimation("Scene", 1, new AnimationController.AnimationListener() {
+//            @Override
+//            public void onEnd(AnimationController.AnimationDesc animation) {
+//            }
+//
+//            @Override
+//            public void onLoop(AnimationController.AnimationDesc animation) {
+//                Gdx.app.log("INFO","Animation Ended");
+//            }
+//        });
 
     }
 
@@ -276,6 +325,9 @@ public class PlayScreen implements Screen {
         for (RunningObject ob:listObjects)
             if (ob.fixture.getFilterData().categoryBits != CarGame.DESTROYED_BIT)
             ob.instance.transform.setToTranslation(ob.body.getPosition().x,ob.body.getPosition().y,0f);
+
+        controller.update(Gdx.graphics.getDeltaTime());
+        controllerred.update(Gdx.graphics.getDeltaTime());
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
