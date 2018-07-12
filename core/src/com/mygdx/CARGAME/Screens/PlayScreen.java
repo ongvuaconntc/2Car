@@ -185,13 +185,13 @@ public class PlayScreen implements Screen {
                     if (touchOne) {
                         touchOne = false;
                         blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        if (runningState) {
+                        if (runningState&&CarGame.ENABLE_3D) {
                             controller.current = null;
                             controller.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
                         }
                     } else {
                         blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                        if (runningState) {
+                        if (runningState&&CarGame.ENABLE_3D) {
                             controller.current = null;
                             controller.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
                         }
@@ -202,14 +202,14 @@ public class PlayScreen implements Screen {
                     if (touchTwo) {
                         touchTwo = false;
                         redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
-                        if (runningState) {
+                        if (runningState&&CarGame.ENABLE_3D) {
                             controllerred.current = null;
                             controllerred.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
                         }
                     } else {
                         touchTwo = true;
                         redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
-                        if (runningState) {
+                        if (runningState&&CarGame.ENABLE_3D) {
                             controllerred.current = null;
                             controllerred.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
                         }
@@ -259,6 +259,11 @@ public class PlayScreen implements Screen {
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
         model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample.g3db", Files.FileType.Internal));
         model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
+        model.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        model.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#7585ff")));
+        model.materials.get(4).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+
+
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_blue = new ModelInstance(model);
         instance_blue.transform.setToTranslation(blueCar.b2body.getPosition().x,blueCar.b2body.getPosition().y,0f);
@@ -278,8 +283,13 @@ public class PlayScreen implements Screen {
        // G3dModelLoader modelLoader2 = new G3dModelLoader(jsonReader2);
         // Now load the model by name
         // Note, the model (g3db file ) and textures need to be added to the assets folder of the Android proj
-        modelred = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample2.g3db", Files.FileType.Internal));
+        modelred = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample.g3db", Files.FileType.Internal));
         modelred.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
+        modelred.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        modelred.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#ffba75")));
+        modelred.materials.get(4).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+
+
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
         instance_red = new ModelInstance(modelred);
         instance_red.transform.setToTranslation(redCar.b2body.getPosition().x,redCar.b2body.getPosition().y,0f);
