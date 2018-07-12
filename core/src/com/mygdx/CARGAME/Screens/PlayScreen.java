@@ -299,9 +299,10 @@ public class PlayScreen implements Screen {
         //load animation
         controller = new AnimationController(instance_blue);
         controllerred= new AnimationController(instance_red);
-        controllerred.setAnimation("Scene", 2.2f, -1, 1, 10, null);
-
-        controller.setAnimation("Scene", 2.2f, -1, 1, 10, null);
+        controllerred.current = null;
+        controllerred.setAnimation("Scene", 2.2f, -1, 1, 100, null);
+        controller.current = null;
+        controller.setAnimation("Scene", 0f, 1, 1, 100, null);
 
 
 
