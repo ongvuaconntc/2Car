@@ -64,6 +64,8 @@ public class Car extends Sprite {
     }
 
     public void defineCar(boolean blue){
+        int sensorRadius=30;
+        if (CarGame.ENABLE_3D) sensorRadius=40;
         BodyDef bdef=new BodyDef();
         if (blue)
         bdef.position.set(CarGame.WIDTH/8/CarGame.PPM,100/CarGame.PPM);
@@ -86,9 +88,12 @@ public class Car extends Sprite {
         b2body.createFixture(fdef);
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
-        shape=new CircleShape();
-        shape.setRadius(30/CarGame.PPM);
-        fdef.shape=shape;
+        PolygonShape polygonShape=new PolygonShape();
+        polygonShape.setAsBox(20/CarGame.PPM,sensorRadius/CarGame.PPM);
+
+       // shape=new CircleShape();
+       // shape.setRadius(sensorRadius/CarGame.PPM);
+        fdef.shape=polygonShape;
         fdef.isSensor=true;
         b2body.createFixture(fdef).setUserData("car");
 
@@ -106,7 +111,6 @@ public class Car extends Sprite {
         rect.set((CarGame.WIDTH/8-11)/CarGame.PPM,94/CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
         else
             rect.set((7*CarGame.WIDTH/8+11)/CarGame.PPM,94/CarGame.PPM,720/CarGame.PPM,720/CarGame.PPM);
-        PolygonShape polygonShape=new PolygonShape();
         polygonShape.setAsBox(rect.getWidth()/2/CarGame.PPM,rect.getHeight()/2/CarGame.PPM);
         fdef.filter.categoryBits= CarGame.GROUND_BIT;
         fdef.filter.maskBits=CarGame.CAR_BIT;
@@ -142,6 +146,7 @@ public class Car extends Sprite {
 
     public void update(float delta){
         setPosition(b2body.getPosition().x-getWidth()/2,b2body.getPosition().y-getHeight()/2);
+        if (!CarGame.ENABLE_3D)
         setRegion(getFrame(delta));
     }
     private State getState(){

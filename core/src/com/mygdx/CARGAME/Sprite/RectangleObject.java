@@ -33,14 +33,15 @@ public class RectangleObject extends RunningObject {
         fdef.filter.maskBits=CarGame.CAR_BIT;
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
+        if (!CarGame.ENABLE_3D) {
+            if (left < 2)
+                this.texture = new TextureRegion(getTexture(), 35, 0, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            else
+                this.texture = new TextureRegion(getTexture(), 67, 32, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            setBounds(0, 0, CarGame.OBJECT_SIZE * 1.1f / CarGame.PPM, CarGame.OBJECT_SIZE * 1.1f / CarGame.PPM);
 
-        if (left<2)
-        this.texture=new TextureRegion(getTexture(),35,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        else
-            this.texture=new TextureRegion(getTexture(),67,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        setBounds(0,0,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM);
-
-        setRegion(this.texture);
+            setRegion(this.texture);
+        }
 
         Color color;
         if (left<2) color=Color.valueOf("#42c5f4");
@@ -59,7 +60,8 @@ public class RectangleObject extends RunningObject {
 
     public void onHeadHit(){
      //   System.out.println("HIT HIT HIT");
-        setFree();
+        // setFree();
+        if (CarGame.ENABLE_3D) instance.materials.get(0).set(ColorAttribute.createDiffuse(Color.valueOf("#84ff3d")));
         screen.setGameOver(true);
 }
 
@@ -89,17 +91,20 @@ public class RectangleObject extends RunningObject {
                 body.setTransform(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
             }   break;
         }
-        if (left<2)
-            this.texture=new TextureRegion(getTexture(),35,0,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        else
-            this.texture=new TextureRegion(getTexture(),67,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        if (!CarGame.ENABLE_3D) {
+            if (left < 2)
+                this.texture = new TextureRegion(getTexture(), 35, 0, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            else
+                this.texture = new TextureRegion(getTexture(), 67, 32, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            setRegion(this.texture);
+        }
 
         body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
 
         filter.categoryBits= CarGame.RECTANGLE_BIT;
         filter.maskBits=CarGame.CAR_BIT;
         fixture.setFilterData(filter);
-        setRegion(this.texture);
+
 
         if (CarGame.ENABLE_3D){
             Color color;

@@ -129,7 +129,6 @@ public class PlayScreen implements Screen {
     public PlayScreen(CarGame carGame) {
         touch = new boolean[20];
         atlas = new TextureAtlas("Car.pack");
-
         atlasObjects = new TextureAtlas("Object.pack");
         listObjects = new Array<RunningObject>();
         deadBodies = new Array<Body>();
@@ -575,8 +574,9 @@ public class PlayScreen implements Screen {
         for (RunningObject co : listObjects)
             if (co.filter.categoryBits != CarGame.DESTROYED_BIT) {
                 co.update(delta);
-                if (co.body.getPosition().y < 0) {
+                if (co.body.getPosition().y < 70/CarGame.PPM) {
                     if (CircleObject.class.isAssignableFrom(co.getClass())) {
+                        if (CarGame.ENABLE_3D) co.instance.materials.get(0).set(ColorAttribute.createDiffuse(Color.valueOf("#84ff3d")));
                         setGameOver(true);
                     }
                 }
@@ -614,7 +614,7 @@ public class PlayScreen implements Screen {
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
-//        box2DDebugRenderer.render(world,game_cam.combined);
+                if (!CarGame.ENABLE_3D)box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 getFrame();
                 game.setScreen(new StartScreen(game, capturedFrame));
@@ -641,7 +641,7 @@ public class PlayScreen implements Screen {
                 else render3D();
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-//        box2DDebugRenderer.render(world,game_cam.combined);
+                if (!CarGame.ENABLE_3D)   box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 if (gameOver) {
                     initTouchStatus();//reset touch status

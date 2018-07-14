@@ -38,14 +38,14 @@ public class CircleObject extends RunningObject {
         this.filter=fdef.filter;
         fixture=body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
-
-        if (left<2)
-        this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        else
-            this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        setBounds(0,0,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM,CarGame.OBJECT_SIZE*1.1f/CarGame.PPM);
-        setRegion(this.texture);
-
+        if (!CarGame.ENABLE_3D) {
+            if (left < 2)
+                this.texture = new TextureRegion(getTexture(), 35, 32, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            else
+                this.texture = new TextureRegion(getTexture(), 1, 31, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
+            setBounds(0, 0, CarGame.OBJECT_SIZE * 1.1f / CarGame.PPM, CarGame.OBJECT_SIZE * 1.1f / CarGame.PPM);
+            setRegion(this.texture);
+        }
         Color color;
         if (left<2) color=Color.valueOf("#42c5f4");
         else color=Color.valueOf("#fc4e4e");
@@ -97,14 +97,17 @@ public class CircleObject extends RunningObject {
 
         body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
 
-        if (left<2)
-            this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
-        else
-            this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+
         filter.categoryBits= CarGame.CIRCLE_BIT;
         filter.maskBits=CarGame.CAR_BIT;
         fixture.setFilterData(filter);
-        setRegion(this.texture);
+        if (!CarGame.ENABLE_3D){
+            if (left<2)
+                this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+            else
+                this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+            setRegion(this.texture);
+        }
         if (CarGame.ENABLE_3D){
             Color color;
             if (left<2) color=Color.valueOf("#42c5f4");
