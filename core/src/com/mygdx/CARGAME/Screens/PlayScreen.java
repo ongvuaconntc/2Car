@@ -118,6 +118,12 @@ public class PlayScreen implements Screen {
     public ModelInstance instance_wall;
     private AnimationController controller;
     private AnimationController controllerred;
+    private AnimationController controller_rolling;
+    private AnimationController controller_rolling_red;
+    boolean turning_blue=false;
+    boolean turning_red=false;
+
+
 
 
     public PlayScreen(CarGame carGame) {
@@ -187,13 +193,35 @@ public class PlayScreen implements Screen {
                         blueCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                         if (runningState&&CarGame.ENABLE_3D) {
                             controller.current = null;
-                            controller.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
+                            turning_blue=true;
+                            controller.setAnimation("Scene", 0.f, 1, 1, 1.7f, new AnimationController.AnimationListener() {
+                                @Override
+                                public void onEnd(AnimationController.AnimationDesc animation) {
+                                    turning_blue=false;
+                                }
+
+                                @Override
+                                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                                }
+                            });
                         }
                     } else {
                         blueCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                         if (runningState&&CarGame.ENABLE_3D) {
                             controller.current = null;
-                            controller.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
+                            turning_blue=true;
+                            controller.setAnimation("Scene", 2f, 1, 1, 1.7f,  new AnimationController.AnimationListener() {
+                                @Override
+                                public void onEnd(AnimationController.AnimationDesc animation) {
+                                    turning_blue=false;
+                                }
+
+                                @Override
+                                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                                }
+                            });
                         }
                         touchOne = true;
                     }
@@ -204,14 +232,36 @@ public class PlayScreen implements Screen {
                         redCar.b2body.setLinearVelocity(CarGame.CAR_VELOCITY, 0);
                         if (runningState&&CarGame.ENABLE_3D) {
                             controllerred.current = null;
-                            controllerred.setAnimation("Scene", 0.f, 1, 1, 1.7f, null);
+                            turning_red=true;
+                            controllerred.setAnimation("Scene", 0.f, 1, 1, 1.7f,  new AnimationController.AnimationListener() {
+                                @Override
+                                public void onEnd(AnimationController.AnimationDesc animation) {
+                                    turning_red=false;
+                                }
+
+                                @Override
+                                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                                }
+                            });
                         }
                     } else {
                         touchTwo = true;
                         redCar.b2body.setLinearVelocity(-CarGame.CAR_VELOCITY, 0);
                         if (runningState&&CarGame.ENABLE_3D) {
                             controllerred.current = null;
-                            controllerred.setAnimation("Scene", 2.2f, -1, 1, 1.7f, null);
+                            turning_red=true;
+                            controllerred.setAnimation("Scene", 2f, 1, 1, 1.7f,  new AnimationController.AnimationListener() {
+                                @Override
+                                public void onEnd(AnimationController.AnimationDesc animation) {
+                                    turning_red=false;
+                                }
+
+                                @Override
+                                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                                }
+                            });
                         }
                     }
                 }
@@ -261,7 +311,7 @@ public class PlayScreen implements Screen {
         model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
         model.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
         model.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#7585ff")));
-        model.materials.get(4).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        model.materials.get(3).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
 
 
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
@@ -287,7 +337,7 @@ public class PlayScreen implements Screen {
         modelred.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
         modelred.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
         modelred.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#ffba75")));
-        modelred.materials.get(4).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        modelred.materials.get(3).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
 
 
         // Now create an instance.  Instance holds the positioning data, etc of an instance of your model
@@ -309,10 +359,19 @@ public class PlayScreen implements Screen {
         //load animation
         controller = new AnimationController(instance_blue);
         controllerred= new AnimationController(instance_red);
+        controller_rolling= new AnimationController(instance_blue);
+        controller_rolling_red= new AnimationController(instance_red);
+
         controllerred.current = null;
-        controllerred.setAnimation("Scene", 2.2f, -1, 1, 100, null);
+        controllerred.setAnimation("Scene", 2f, 1, 1, 100, null);
         controller.current = null;
         controller.setAnimation("Scene", 0f, 1, 1, 100, null);
+
+        controller_rolling.current = null;
+        controller_rolling.setAnimation("Scene", 4.1f, 0.85f, -1, 2, null);
+        controller_rolling_red.current = null;
+        controller_rolling_red.setAnimation("Scene", 4.1f, 0.85f, -1, 2, null);
+
 
 
 
@@ -339,6 +398,12 @@ public class PlayScreen implements Screen {
 
         controller.update(Gdx.graphics.getDeltaTime());
         controllerred.update(Gdx.graphics.getDeltaTime());
+
+        if (!turning_blue)
+        controller_rolling.update(Gdx.graphics.getDeltaTime());
+        if (!turning_red)
+        controller_rolling_red.update(Gdx.graphics.getDeltaTime());
+
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
