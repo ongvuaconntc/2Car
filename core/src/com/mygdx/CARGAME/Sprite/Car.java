@@ -3,6 +3,7 @@ package com.mygdx.CARGAME.Sprite;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Ellipse;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -79,7 +80,7 @@ public class Car extends Sprite {
       //  b2body.setLinearVelocity(new Vector2(0,11));
         FixtureDef fdef=new FixtureDef();
         CircleShape shape=new CircleShape();
-        shape.setRadius(2/CarGame.PPM);
+        shape.setRadius(1/CarGame.PPM);
         fdef.filter.categoryBits= CarGame.CAR_BIT;
         fdef.filter.maskBits=CarGame.CIRCLE_BIT|CarGame.RECTANGLE_BIT|CarGame.GROUND_BIT;
         fdef.shape=shape;
@@ -89,7 +90,14 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         PolygonShape polygonShape=new PolygonShape();
-        polygonShape.setAsBox(25/CarGame.PPM,sensorRadius/CarGame.PPM);
+       // polygonShape.setAsBox(25/CarGame.PPM,sensorRadius/CarGame.PPM);
+        Vector2[] vector2s={new Vector2(12/CarGame.PPM,35/CarGame.PPM),new Vector2(24/CarGame.PPM,12/CarGame.PPM),
+                            new Vector2(24/CarGame.PPM,-12/CarGame.PPM),new Vector2(12/CarGame.PPM,-35/CarGame.PPM),
+                            new Vector2(-12/CarGame.PPM,-35/CarGame.PPM),new Vector2(-24/CarGame.PPM,-12/CarGame.PPM),
+                            new Vector2(-24/CarGame.PPM,12/CarGame.PPM),new Vector2(-12/CarGame.PPM,35/CarGame.PPM)};
+        polygonShape.set(vector2s);
+
+        Ellipse ellipse=new Ellipse();
 
        // shape=new CircleShape();
        // shape.setRadius(sensorRadius/CarGame.PPM);

@@ -33,7 +33,7 @@ public class CircleObject extends RunningObject {
     public CircleObject(PlayScreen screen, World world, int left, String name) {
         super(screen, world, left, name);
         shape = new CircleShape();
-        shape.setRadius(CarGame.OBJECT_SIZE / 3 / CarGame.PPM);
+        shape.setRadius(CarGame.OBJECT_SIZE / 4 / CarGame.PPM);
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = CarGame.CIRCLE_BIT;

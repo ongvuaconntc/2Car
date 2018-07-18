@@ -626,7 +626,7 @@ public class PlayScreen implements Screen {
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
-              //  if (!CarGame.ENABLE_3D)box2DDebugRenderer.render(world,game_cam.combined);
+              if (!CarGame.ENABLE_3D)box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 getFrame();
                 game.setScreen(new StartScreen(game, capturedFrame));
@@ -653,7 +653,7 @@ public class PlayScreen implements Screen {
                 else render3D();
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-              //  if (!CarGame.ENABLE_3D)   box2DDebugRenderer.render(world,game_cam.combined);
+            if (!CarGame.ENABLE_3D)   box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 if (gameOver) {
                     initTouchStatus();//reset touch status

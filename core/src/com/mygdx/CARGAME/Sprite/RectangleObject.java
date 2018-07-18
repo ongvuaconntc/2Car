@@ -32,7 +32,7 @@ public class RectangleObject extends RunningObject {
     public RectangleObject(PlayScreen screen, World world, int left, String name) {
         super(screen, world, left, name);
         shape = new PolygonShape();
-        shape.setAsBox(CarGame.OBJECT_SIZE / 3 / CarGame.PPM, CarGame.OBJECT_SIZE / 3 / CarGame.PPM);
+        shape.setAsBox(CarGame.OBJECT_SIZE / 4 / CarGame.PPM, CarGame.OBJECT_SIZE / 4 / CarGame.PPM);
         FixtureDef fdef = new FixtureDef();
         fdef.shape = shape;
         fdef.filter.categoryBits = CarGame.RECTANGLE_BIT;
