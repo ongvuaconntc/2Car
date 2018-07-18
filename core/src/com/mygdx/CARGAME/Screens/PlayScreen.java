@@ -287,7 +287,7 @@ public class PlayScreen implements Screen {
     public void init3D(){
         System.out.println("init 3d");
         cam_3d = new PerspectiveCamera(100, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 4f);
+        cam_3d.position.set(CarGame.WIDTH/CarGame.PPM/2f, -2f, 6f);
         cam_3d.lookAt(CarGame.WIDTH/CarGame.PPM/2f,10f,0.5f);
         cam_3d.near = 0.5f;
         cam_3d.far = 1000f;
@@ -350,7 +350,7 @@ public class PlayScreen implements Screen {
         Texture texture = new Texture("background1.jpg");
         Material material = new Material(TextureAttribute.createDiffuse(texture), ColorAttribute.createSpecular(1, 1, 1, 1), FloatAttribute.createShininess(8f));
         long attributes = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
-        wall = modelBuilder.createBox(CarGame.WIDTH/CarGame.PPM, 20*CarGame.HEIGHT/CarGame.PPM, 0.1f, material, attributes);
+        wall = modelBuilder.createBox(CarGame.WIDTH/CarGame.PPM, 4.5f*CarGame.HEIGHT/CarGame.PPM, 0.1f, material, attributes);
         instance_wall=new ModelInstance(wall);
         instance_wall.transform.setToTranslation(CarGame.WIDTH/CarGame.PPM/2f,7f,-1f);
 
@@ -614,7 +614,7 @@ public class PlayScreen implements Screen {
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
-                if (!CarGame.ENABLE_3D)box2DDebugRenderer.render(world,game_cam.combined);
+              //  if (!CarGame.ENABLE_3D)box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 getFrame();
                 game.setScreen(new StartScreen(game, capturedFrame));
@@ -641,7 +641,7 @@ public class PlayScreen implements Screen {
                 else render3D();
 
                 game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-                if (!CarGame.ENABLE_3D)   box2DDebugRenderer.render(world,game_cam.combined);
+              //  if (!CarGame.ENABLE_3D)   box2DDebugRenderer.render(world,game_cam.combined);
                 hud.stage.draw();
                 if (gameOver) {
                     initTouchStatus();//reset touch status

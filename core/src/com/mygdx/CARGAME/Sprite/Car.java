@@ -89,7 +89,7 @@ public class Car extends Sprite {
         System.out.println("car width"+getWidth()+" car height"+getHeight());
         fdef=new FixtureDef();
         PolygonShape polygonShape=new PolygonShape();
-        polygonShape.setAsBox(20/CarGame.PPM,sensorRadius/CarGame.PPM);
+        polygonShape.setAsBox(25/CarGame.PPM,sensorRadius/CarGame.PPM);
 
        // shape=new CircleShape();
        // shape.setRadius(sensorRadius/CarGame.PPM);
