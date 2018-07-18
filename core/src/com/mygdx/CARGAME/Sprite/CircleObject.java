@@ -1,5 +1,7 @@
 package com.mygdx.CARGAME.Sprite;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -25,18 +27,19 @@ import com.mygdx.CARGAME.Screens.PlayScreen;
 
 public class CircleObject extends RunningObject {
     protected CircleShape shape;
+    private Sound sound;
 
 
-    public CircleObject (PlayScreen screen,World world, int left,String name){
-        super(screen,world,left,name);
-        shape=new CircleShape();
-        shape.setRadius(CarGame.OBJECT_SIZE/3/CarGame.PPM);
-        FixtureDef fdef =new FixtureDef();
-        fdef.shape=shape;
-        fdef.filter.categoryBits= CarGame.CIRCLE_BIT;
-        fdef.filter.maskBits=CarGame.CAR_BIT;
-        this.filter=fdef.filter;
-        fixture=body.createFixture(fdef);
+    public CircleObject(PlayScreen screen, World world, int left, String name) {
+        super(screen, world, left, name);
+        shape = new CircleShape();
+        shape.setRadius(CarGame.OBJECT_SIZE / 3 / CarGame.PPM);
+        FixtureDef fdef = new FixtureDef();
+        fdef.shape = shape;
+        fdef.filter.categoryBits = CarGame.CIRCLE_BIT;
+        fdef.filter.maskBits = CarGame.CAR_BIT;
+        this.filter = fdef.filter;
+        fixture = body.createFixture(fdef);
         body.createFixture(fdef).setUserData(this);
         if (!CarGame.ENABLE_3D) {
             if (left < 2)
@@ -47,74 +50,84 @@ public class CircleObject extends RunningObject {
             setRegion(this.texture);
         }
         Color color;
-        if (left<2) color=Color.valueOf("#42c5f4");
-        else color=Color.valueOf("#fc4e4e");
+        if (left < 2) color = Color.valueOf("#42c5f4");
+        else color = Color.valueOf("#fc4e4e");
         if (CarGame.ENABLE_3D) {
-            System.out.println("screen = null: " + (screen == null));
-            model = screen.modelBuilder.createSphere(CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, CarGame.OBJECT_SIZE/CarGame.PPM, 20, 20,
+            model = screen.modelBuilder.createSphere(CarGame.OBJECT_SIZE / CarGame.PPM, CarGame.OBJECT_SIZE / CarGame.PPM, CarGame.OBJECT_SIZE / CarGame.PPM, 20, 20,
                     new Material(ColorAttribute.createDiffuse(color)),
                     VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
             instance = new ModelInstance(model);
-            instance.transform.setToTranslation(this.body.getPosition().x,this.body.getPosition().y,0f);
-      //      instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+            instance.transform.setToTranslation(this.body.getPosition().x, this.body.getPosition().y, 0f);
+            //      instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
         }
     }
 
-    public void onHeadHit(){
+    public void onHeadHit() {
+        playDieMusic();
 //        System.out.println("HIT HIT HIT");
-       // screen.addBody(body);
+        // screen.addBody(body);
         screen.getHud().addScore();
         setFree();
     }
 
     @Override
     public void reset(int left) {
-      //  body.resetMassData();
-       // body.setActive(true);
-        switch (left){
+        //  body.resetMassData();
+        // body.setActive(true);
+        switch (left) {
             case 0: {
                 if (CarGame.ENABLE_3D)
                     instance.transform.setToTranslation(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
 
                 body.setTransform(CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
-            }break;
+            }
+            break;
             case 1: {
                 if (CarGame.ENABLE_3D)
                     instance.transform.setToTranslation(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
                 body.setTransform(3 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
-            }   break;
+            }
+            break;
             case 2: {
                 if (CarGame.ENABLE_3D)
                     instance.transform.setToTranslation(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
                 body.setTransform(5 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
-            }   break;
+            }
+            break;
             case 3: {
                 if (CarGame.ENABLE_3D)
                     instance.transform.setToTranslation(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, 0f);
                 body.setTransform(7 * CarGame.WIDTH / 8 / CarGame.PPM, (CarGame.HEIGHT + 10) / CarGame.PPM, body.getAngle());
-            }   break;
+            }
+            break;
         }
 
-        body.setLinearVelocity(0,-CarGame.OBJECT_VELOCITY);
+        body.setLinearVelocity(0, -CarGame.OBJECT_VELOCITY);
 
 
-        filter.categoryBits= CarGame.CIRCLE_BIT;
-        filter.maskBits=CarGame.CAR_BIT;
+        filter.categoryBits = CarGame.CIRCLE_BIT;
+        filter.maskBits = CarGame.CAR_BIT;
         fixture.setFilterData(filter);
-        if (!CarGame.ENABLE_3D){
-            if (left<2)
-                this.texture=new TextureRegion(getTexture(),35,32,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+        if (!CarGame.ENABLE_3D) {
+            if (left < 2)
+                this.texture = new TextureRegion(getTexture(), 35, 32, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
             else
-                this.texture=new TextureRegion(getTexture(),1,31,CarGame.OBJECT_SIZE,CarGame.OBJECT_SIZE);
+                this.texture = new TextureRegion(getTexture(), 1, 31, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
             setRegion(this.texture);
         }
-        if (CarGame.ENABLE_3D){
+        if (CarGame.ENABLE_3D) {
             Color color;
-            if (left<2) color=Color.valueOf("#42c5f4");
-            else color=Color.valueOf("#fc4e4e");
+            if (left < 2) color = Color.valueOf("#42c5f4");
+            else color = Color.valueOf("#fc4e4e");
 
             instance.materials.get(0).set(ColorAttribute.createDiffuse(color));
-       //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
+            //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
         }
+    }
+
+    public void playDieMusic() {
+        sound = CarGame.scoreMusic;
+        long id = sound.play(CarGame.volumnInitScore);
+        sound.setLooping(id, false);
     }
 }

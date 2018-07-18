@@ -1,7 +1,9 @@
 package com.mygdx.CARGAME.Screens;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,6 +11,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -16,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.UBJsonReader;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -27,6 +33,14 @@ public class MenuScreen implements Screen {
     private Hud hud;
     private Viewport viewport;
     private Texture capturedFrame;
+    private Music music;
+    private boolean btn3DClick = false;
+    private boolean tmp = false;
+    private FileHandle exoFile;
+    private BitmapFont fontSmall;
+    private BitmapFont fontMedium;
+    private BitmapFont fontLarge;
+    private SmartFontGenerator fontGen;
 
     private CarGame game;
     private OrthographicCamera game_cam;
@@ -37,6 +51,10 @@ public class MenuScreen implements Screen {
         game_cam = new OrthographicCamera();
         viewport = new StretchViewport((game.WIDTH / game.PPM), (game.HEIGHT / game.PPM), game_cam);
         game_cam.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
+        music = CarGame.backgroundMusic;
+        music.setVolume(CarGame.volumnInitBackground);
+        music.setLooping(CarGame.isLoopingMusic);
+        music.play();
 
         hud = new Hud(game.batch);
         Gdx.input.setInputProcessor(hud.stage);
@@ -48,7 +66,7 @@ public class MenuScreen implements Screen {
         playButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnStartClick();
+                btnStart2DClick();
             }
 
             @Override
@@ -66,7 +84,8 @@ public class MenuScreen implements Screen {
         playButton2.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                btnStartClick2();
+                btn3DClick = true;
+//                btnStart3DClick();
             }
 
             @Override
@@ -80,11 +99,11 @@ public class MenuScreen implements Screen {
         hud.stage.addActor(playButton);
         hud.stage.addActor(playButton2);
 
-        SmartFontGenerator fontGen = new SmartFontGenerator();
-        FileHandle exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
-        BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 30);
-        BitmapFont fontMedium = fontGen.createFont(exoFile, "exo-medium", 48);
-        BitmapFont fontLarge = fontGen.createFont(exoFile, "exo-large", 72);
+        fontGen = new SmartFontGenerator();
+        exoFile = Gdx.files.internal("LiberationMono-Regular.ttf");
+        fontSmall = fontGen.createFont(exoFile, "exo-small", 30);
+        fontMedium = fontGen.createFont(exoFile, "exo-medium", 48);
+        fontLarge = fontGen.createFont(exoFile, "exo-large", 72);
 
 
         Label.LabelStyle smallStyle = new Label.LabelStyle();
@@ -111,6 +130,10 @@ public class MenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (tmp) {
+            System.out.println("click");
+            btnStart3DClick();
+        }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.setProjectionMatrix(game_cam.combined);
@@ -121,10 +144,27 @@ public class MenuScreen implements Screen {
         game.batch.draw(capturedFrame, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         game.batch.end();
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        if (btn3DClick) {
+            System.out.println("loading...");
+            BitmapFont fontSmall = fontGen.createFont(exoFile, "exo-small", 20);
+            Label.LabelStyle smallStyle = new Label.LabelStyle();
+            smallStyle.font = fontSmall;
+            Label lbGame = new Label("loading...", smallStyle);
+            Table table = new Table();
+            table.setFillParent(true);
+            table.add(lbGame).colspan(2).spaceBottom(20).row();
+            table.align(Align.bottom);
+            table.defaults().size(hud.stage.getWidth(), hud.stage.getHeight() / 6);
+            table.setPosition(0, hud.stage.getHeight() / 6);
+            hud.stage.addActor(table);
+            System.out.println("added table");
+        }
         hud.stage.draw();
+        tmp = btn3DClick;
+        System.out.println("render");
     }
 
-    private void btnStartClick() {
+    private void btnStart2DClick() {
         CarGame.ENABLE_3D = false;
         PlayScreen p = new PlayScreen(game);
 
@@ -134,14 +174,38 @@ public class MenuScreen implements Screen {
         dispose();
     }
 
-    private void btnStartClick2() {
+    private void btnStart3DClick() {
         CarGame.ENABLE_3D = true;
+        initModel3D();
         PlayScreen p = new PlayScreen(game);
-
         p.setState(PlayScreen.State.RUN);
         p.reset();
         game.setScreen(p);
         dispose();
+    }
+
+    public void initModel3D() {
+        Model model;
+        // Model loader needs a binary json reader to decode
+        UBJsonReader jsonReader = new UBJsonReader();
+        // Create a model loader passing in our json reader
+        G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
+        model = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample.g3db", Files.FileType.Internal));
+        model.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLUE));
+        model.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        model.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#7585ff")));
+        model.materials.get(3).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+
+        Model modelRed;
+        modelRed = modelLoader.loadModel(Gdx.files.getFileHandle("object3d/carsample.g3db", Files.FileType.Internal));
+        modelRed.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED));
+        modelRed.materials.get(2).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+        modelRed.materials.get(1).set(ColorAttribute.createDiffuse(Color.valueOf("#ffba75")));
+        modelRed.materials.get(3).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
+
+        CarGame.modelBlue = model;
+        CarGame.modelred = modelRed;
+
     }
 
     @Override
