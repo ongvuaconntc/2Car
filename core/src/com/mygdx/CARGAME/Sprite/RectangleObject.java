@@ -38,7 +38,7 @@ public class RectangleObject extends RunningObject {
         fdef.filter.categoryBits = CarGame.RECTANGLE_BIT;
         fdef.filter.maskBits = CarGame.CAR_BIT;
         fixture = body.createFixture(fdef);
-        body.createFixture(fdef).setUserData(this);
+        fixture.setUserData(this);
         if (!CarGame.ENABLE_3D) {
             if (left < 2)
                 this.texture = new TextureRegion(getTexture(), 35, 0, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);

@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.mygdx.CARGAME.CarGame;
 import com.mygdx.CARGAME.Sprite.CircleObject;
 import com.mygdx.CARGAME.Sprite.RunningObject;
 
@@ -24,7 +25,9 @@ public class WorldContactListener implements ContactListener {
 
             if (object.getUserData()!=null&& RunningObject.class.isAssignableFrom(object.getUserData().getClass())){
             //    System.out.println("Collision\n");
+                if (object.getFilterData().categoryBits!= CarGame.DESTROYED_BIT)
                 ((RunningObject) object.getUserData()).onHeadHit();
+
             }
             else{
                 System.out.println("wall hit");

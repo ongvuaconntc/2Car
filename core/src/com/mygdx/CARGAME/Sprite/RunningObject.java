@@ -60,13 +60,14 @@ public abstract class RunningObject extends Sprite {
         filter.categoryBits=CarGame.DESTROYED_BIT;
         filter.maskBits=0;
         fixture.setFilterData(filter);
-        body.setLinearVelocity(0,0);
-        body.setTransform(-50,-50, body.getAngle());
-      //  body.setActive(false);
-        setPosition(-50,-50);
 
+        body.setTransform(-50/CarGame.PPM,-50/CarGame.PPM, body.getAngle());
+        body.setLinearVelocity(0,0);
+
+      //  body.setActive(false);
+        setPosition(-50/CarGame.PPM,-50/CarGame.PPM);
         if (CarGame.ENABLE_3D) {
-            instance.transform.setToTranslation(-50, -50, 0f);
+            instance.transform.setToTranslation(-50/CarGame.PPM, -50/CarGame.PPM, 0f);
             //        instance.transform.trn(this.body.getLinearVelocity().x/CarGame.PPM,this.body.getLinearVelocity().y/CarGame.PPM,0f);
         }
     }

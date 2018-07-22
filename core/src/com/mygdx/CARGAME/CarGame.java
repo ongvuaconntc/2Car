@@ -67,6 +67,7 @@ public class CarGame extends Game {
         scoreMusic = Gdx.audio.newSound(Gdx.files.internal("sounds/score.mp3"));
         dieOneMusic = Gdx.audio.newSound(Gdx.files.internal("sounds/die1.mp3"));
         dieTwoMusic  = Gdx.audio.newSound(Gdx.files.internal("sounds/die2.mp3"));
+
 		setScreen(new MenuScreen(this, null));
 	}
 

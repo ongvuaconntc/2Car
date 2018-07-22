@@ -40,7 +40,7 @@ public class CircleObject extends RunningObject {
         fdef.filter.maskBits = CarGame.CAR_BIT;
         this.filter = fdef.filter;
         fixture = body.createFixture(fdef);
-        body.createFixture(fdef).setUserData(this);
+        fixture.setUserData(this);
         if (!CarGame.ENABLE_3D) {
             if (left < 2)
                 this.texture = new TextureRegion(getTexture(), 35, 32, CarGame.OBJECT_SIZE, CarGame.OBJECT_SIZE);
@@ -64,7 +64,7 @@ public class CircleObject extends RunningObject {
 
     public void onHeadHit() {
         playScoreMusic();
-//        System.out.println("HIT HIT HIT");
+      // System.out.println("HIT HIT HIT");
         // screen.addBody(body);
         screen.getHud().addScore();
         setFree();
