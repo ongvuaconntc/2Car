@@ -63,7 +63,7 @@ public class CircleObject extends RunningObject {
     }
 
     public void onHeadHit() {
-        playDieMusic();
+        playScoreMusic();
 //        System.out.println("HIT HIT HIT");
         // screen.addBody(body);
         screen.getHud().addScore();
@@ -125,9 +125,10 @@ public class CircleObject extends RunningObject {
         }
     }
 
-    public void playDieMusic() {
+    public void playScoreMusic() {
         sound = CarGame.scoreMusic;
-        long id = sound.play(CarGame.volumnInitScore);
+//        long id = sound.play(CarGame.volumnInitScore);
+        long id = sound.play();
         sound.setLooping(id, false);
     }
 }

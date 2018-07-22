@@ -53,7 +53,6 @@ public class RectangleObject extends RunningObject {
         if (left < 2) color = Color.valueOf("#42c5f4");
         else color = Color.valueOf("#fc4e4e");
         if (CarGame.ENABLE_3D) {
-            System.out.println("screen = null: " + (screen == null));
             model = screen.modelBuilder.createBox(CarGame.OBJECT_SIZE / CarGame.PPM, CarGame.OBJECT_SIZE / CarGame.PPM, CarGame.OBJECT_SIZE / CarGame.PPM,
                     new Material(ColorAttribute.createDiffuse(color)),
                     VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
@@ -133,12 +132,10 @@ public class RectangleObject extends RunningObject {
         int i = new Random().nextInt(2);
         if (i == 0) {
             sound1 = CarGame.dieOneMusic;
-            long id = sound1.play(CarGame.volumnInitDie);
-            sound1.setLooping(id, false);
+            long id = sound1.play();
         } else {
             sound2 = CarGame.dieTwoMusic;
-            long id = sound2.play(CarGame.volumnInitDie);
-            sound2.setLooping(id, false);
+            long id = sound2.play();
         }
     }
 }

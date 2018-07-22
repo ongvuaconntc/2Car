@@ -8,8 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelCache;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.CARGAME.Screens.MenuScreen;
 import com.mygdx.CARGAME.Screens.PlayScreen;
 
@@ -22,7 +25,7 @@ public class CarGame extends Game {
 	public static final int CAR_SIZE=64;
 
 	public static final int CAR_VELOCITY=7;
-	public static int OBJECT_VELOCITY=5;
+	public static int OBJECT_VELOCITY=7;
 
 
 	public static final short CAR_BIT=1;
@@ -39,15 +42,15 @@ public class CarGame extends Game {
 	public static Sound dieOneMusic;
 	public static Sound dieTwoMusic;
 	public static Model modelBlue;
-    public static Model modelred;
+    public static Model modelRed;
     public static Model wall;
 
 	public static boolean ENABLE_3D=true;
 
 	//3d variables
 	public ModelBatch modelBatch;
+	public ModelCache cache;
 	public Environment environment;
-
 
 
 	@Override
@@ -55,6 +58,7 @@ public class CarGame extends Game {
 		batch = new SpriteBatch();
 		//if (ENABLE_3D) {
 			modelBatch = new ModelBatch();
+			cache = new ModelCache();
 			environment = new Environment();
 			environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 0.5f));
 			environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, 0f, -1f));

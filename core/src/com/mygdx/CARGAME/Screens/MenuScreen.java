@@ -131,7 +131,6 @@ public class MenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if (tmp) {
-            System.out.println("click");
             btnStart3DClick();
         }
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -157,17 +156,22 @@ public class MenuScreen implements Screen {
             table.defaults().size(hud.stage.getWidth(), hud.stage.getHeight() / 6);
             table.setPosition(0, hud.stage.getHeight() / 6);
             hud.stage.addActor(table);
-            System.out.println("added table");
         }
         hud.stage.draw();
         tmp = btn3DClick;
-        System.out.println("render");
     }
 
     private void btnStart2DClick() {
         CarGame.ENABLE_3D = false;
         PlayScreen p = new PlayScreen(game);
-
+        if (CarGame.modelBlue != null) {
+            CarGame.modelBlue.dispose();
+            CarGame.modelBlue = null;
+        }
+        if (CarGame.modelRed != null) {
+            CarGame.modelRed.dispose();
+            CarGame.modelRed = null;
+        }
         p.setState(PlayScreen.State.RUN);
         p.reset();
         game.setScreen(p);
@@ -185,6 +189,9 @@ public class MenuScreen implements Screen {
     }
 
     public void initModel3D() {
+        if (CarGame.modelBlue != null && CarGame.modelRed != null) {
+            return;
+        }
         Model model;
         // Model loader needs a binary json reader to decode
         UBJsonReader jsonReader = new UBJsonReader();
@@ -204,7 +211,7 @@ public class MenuScreen implements Screen {
         modelRed.materials.get(3).set(ColorAttribute.createDiffuse(Color.valueOf("#4c5159")));
 
         CarGame.modelBlue = model;
-        CarGame.modelred = modelRed;
+        CarGame.modelRed = modelRed;
 
     }
 

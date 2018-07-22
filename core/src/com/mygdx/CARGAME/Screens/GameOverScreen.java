@@ -29,6 +29,7 @@ public class GameOverScreen implements Screen {
     private Viewport viewport;
     private Texture capturedLastFrame;
     private static int highScore;
+    private static int highScore3D;
     private int score;
 
     private CarGame game;
@@ -47,10 +48,17 @@ public class GameOverScreen implements Screen {
 
         Preferences prefs = Gdx.app.getPreferences("ScorePreferences");
         highScore = prefs.getInteger("score", 0);
+        highScore3D = prefs.getInteger("score3d", 0);
 
-        if (score > highScore) {
+        if (score > highScore && !CarGame.ENABLE_3D) {
             highScore = score;
             prefs.putInteger("score", highScore);
+            prefs.flush();
+        }
+
+        if (score > highScore3D && CarGame.ENABLE_3D) {
+            highScore3D = score;
+            prefs.putInteger("score3d", highScore3D);
             prefs.flush();
         }
         BitmapFont f = new BitmapFont();
@@ -124,7 +132,7 @@ public class GameOverScreen implements Screen {
         Label lbScore = new Label("SCORE", smallStyle);
         Label lbScoreValue = new Label("" + score, smallStyle);
         Label lbBest = new Label("BEST", smallStyle);
-        Label lbBestValue = new Label("" + highScore, smallStyle);
+        Label lbBestValue = new Label("" + (CarGame.ENABLE_3D ? highScore3D : highScore), smallStyle);
         Label lbGameover = new Label("GAME OVER", mediumStyle);
 
         Label large = new Label("Large Font", largeStyle);
@@ -205,9 +213,15 @@ public class GameOverScreen implements Screen {
     @Override
     public void dispose() {
         Preferences prefs = Gdx.app.getPreferences("ScorePreferences");
-        if (score > highScore) {
+        if (score > highScore && !CarGame.ENABLE_3D) {
             highScore = score;
             prefs.putInteger("score", highScore);
+            prefs.flush();
+        }
+
+        if (score > highScore3D && CarGame.ENABLE_3D) {
+            highScore3D = score;
+            prefs.putInteger("score3d", highScore3D);
             prefs.flush();
         }
     }
