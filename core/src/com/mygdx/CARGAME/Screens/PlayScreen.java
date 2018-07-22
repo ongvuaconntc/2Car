@@ -511,8 +511,8 @@ public class PlayScreen implements Screen {
         }
 //        generateTimer += delta;
 //        generateTimer2 += delta;
-        generateTimer += 0.02;
-        generateTimer2 += 0.02;
+        generateTimer += 0.025;
+        generateTimer2 += 0.025;
     }
 
     private void update(float delta) {
